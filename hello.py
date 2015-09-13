@@ -1,3 +1,2 @@
-__author__ = 'troels'
-print 'hello'
-print 'hva fan'
+from numpy import *
+
