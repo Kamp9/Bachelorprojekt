@@ -1,43 +1,49 @@
-from numpy import *
-
-"""
-def is_pos_def2(A):
-    (m, n) = A.shape
-    if m != n:
-        return False
-    for i in range(m):
-        subA = A[0:i, 0:i]
-        if linalg.det(A) <= 0:
-            return False
-    return True
-"""
+# coding=utf-8
+import numpy as np
 
 
 def is_pos_def(A):
-    return all(linalg.eigvals(A) > 0)
+    return all(np.linalg.eigvals(A) > 0)
 
 
 def cholesky(A):
     if is_pos_def(A):
         (m, n) = A.shape
-        L = zeros((m, m))
+        L = np.zeros((m, m))
         for i in range(m):
-            a00 = math.sqrt(A[0, 0])
+            a00 = np.math.sqrt(A[0, 0])
             L[i, i] = a00
             if m != 1:
                 L10 = A[1:, 0] / a00
                 L[i+1:, i] = L10
-                A = A[1:, 1:] - L10[:, newaxis] * L10[newaxis, :]
+                A = A[1:, 1:] - L10[:, np.newaxis] * L10[np.newaxis, :]
                 (m, n) = A.shape
         return L
     else:
         raise ValueError('Matrix is not positive definite')
 
 
-def lu(A):
-    (m, n) = A.shape
-    for k in range(m-1):
-        A[k+1:, k] = A[k+1:, k] / A[k, k]
-        A[k+1:, k+1] = A[k+1:, k+1:] - A[k+1:, k] * A[k, k+1:]
-    return A
+def forward_substitution(L, b):
+    (m, n) = L.shape
+    z = np.zeros(m)
+    for i in range(m):
+        z[i] = (1.0 / L[i, i]) * (b[i] - np.dot(L[i, :i], z[:i]))
+    return z
+
+
+def backward_substitution(U, z):
+    (m, n) = U.shape
+    n = m - 1       # kan gøres pænere
+    x = np.zeros(m)
+    for i in range(m):
+        x[n-i] = (1.0 / U[n-i, n-i]) * (z[n-i] - np.dot(U[n-i, :n-i], x[:n-i]))
+    return x
+
+
+
+
+
+
+
+
 

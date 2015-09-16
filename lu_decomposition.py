@@ -1,4 +1,4 @@
-from numpy import *
+import numpy as np
 
 
 def lu(A):
@@ -7,5 +7,4 @@ def lu(A):
         A[k+1:, k] = A[k+1:, k] / A[k, k]
         A[k+1:, k+1:] = A[k+1:, k+1:] - A[k+1:, k] * A[k, k+1:]
     return A
-
 
