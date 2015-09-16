@@ -22,24 +22,12 @@ LU = matrix1 * matrix2
 A = np.array([[9, 4],
               [7, 9]])
 
-b = np.array([[9],
-              [4],
-              [7],
-              [9]])
+b = np.array([[7],
+              [-4.153],
+              [43],
+              [61.13]])
 
 
-L = cholesky_decomposition.cholesky(real_matrix)
-U = L.transpose()
-z = cholesky_decomposition.forward_substitution(L, b)
-x = cholesky_decomposition.backward_substitution(U, z)
-
-
-good_x = np.linalg.solve(real_matrix, b)
-print np.dot(real_matrix, good_x)
-
-print z
-print L
-print U
-print b
+x = cholesky_decomposition.solve(real_matrix, b)
 
 print np.dot(real_matrix, x)
