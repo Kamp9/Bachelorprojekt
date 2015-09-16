@@ -44,7 +44,7 @@ def backward_substitution(U, z):
 
 def solve(A, b):
     """
-    Virker kun for positivt definit
+    solve(A,b) is only working on positive definite matrix A
     :param A:
     :param b:
     :return:
@@ -54,11 +54,4 @@ def solve(A, b):
     z = forward_substitution(L, b)
     x = backward_substitution(U, z)
     return x
-
-
-
-
-
-
-
 
