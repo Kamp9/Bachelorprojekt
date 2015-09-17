@@ -14,6 +14,10 @@ real_matrix2 = np.array([[1, 3, 5],
                          [2, 4, 7],
                          [1, 1, 0]])
 
+real_matrix3 = np.array([[8, 2, 9],
+                         [4, 9, 4],
+                         [6, 7, 9]])
+
 imag_matrix = np.array([[1.+0.j, 0.-2.j],
                         [0.+2.j, 5.+0.j]])
 
@@ -36,11 +40,12 @@ b = np.array([[7],
 
 (P, L, U) = scipy.linalg.lu(real_matrix2)
 
-print L
-print U
-print P
-print
+fun = np.array([[0.5],
+                [0.75]])
 
-print real_matrix2
-print
-print np.dot(L, U)
+fun2 = np.array([[2, 9]])
+
+fun3 = np.array([[0.5, 0.75]])
+
+print lu_decomposition.lu(real_matrix3)[0]
+
