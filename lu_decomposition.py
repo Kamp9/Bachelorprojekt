@@ -1,5 +1,6 @@
 # coding=utf-8
 import numpy as np
+import substitution
 
 
 def lu_inplace(A):
@@ -25,3 +26,9 @@ def lu_out_of_place(A):
         A[k+1:, k+1:] = A[k+1:, k+1:] - L[k+1:, k, np.newaxis] * U[k, k+1:]
     return L, U
 
+
+def solve(A, b):
+    L, U = lu_inplace(A)
+    z = substitution.forward_substitution(L, b)
+    x = substitution.backward_substitution(U, z)
+    return x

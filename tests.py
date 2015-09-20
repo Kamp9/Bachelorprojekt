@@ -1,6 +1,7 @@
 import numpy as np
 import cholesky_decomposition
 import lu_decomposition
+import substitution
 import scipy
 import scipy.linalg
 
@@ -47,8 +48,7 @@ fun2 = np.array([[2, 9]])
 
 fun3 = np.array([[0.5, 0.75]])
 
-print lu_decomposition.lu_inplace(real_matrix3)[0]
-print lu_decomposition.lu_inplace(real_matrix3)[1]
+print np.dot(real_matrix, lu_decomposition.solve(real_matrix, b))
 
-print lu_decomposition.lu_out_of_place(real_matrix3)[0]
-print lu_decomposition.lu_out_of_place(real_matrix3)[1]
+print lu_decomposition.lu_inplace(real_matrix)[0]
+print lu_decomposition.lu_inplace(real_matrix)[1]
