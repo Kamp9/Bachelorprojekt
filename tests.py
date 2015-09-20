@@ -48,4 +48,5 @@ fun2 = np.array([[2, 9]])
 fun3 = np.array([[0.5, 0.75]])
 
 print lu_decomposition.lu(real_matrix3)[0]
+print lu_decomposition.lu(real_matrix3)[1]
 
