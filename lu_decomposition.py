@@ -28,7 +28,8 @@ def lu_out_of_place(A):
 
 
 def solve(A, b):
-    L, U = lu_inplace(A)
+    L, U = lu_inplace(A)  # kan også være lu_out_of_place
     z = substitution.forward_substitution(L, b)
     x = substitution.backward_substitution(U, z)
     return x
+
