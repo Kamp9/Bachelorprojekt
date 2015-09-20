@@ -47,6 +47,8 @@ fun2 = np.array([[2, 9]])
 
 fun3 = np.array([[0.5, 0.75]])
 
-print lu_decomposition.lu(real_matrix3)[0]
-print lu_decomposition.lu(real_matrix3)[1]
+print lu_decomposition.lu_inplace(real_matrix3)[0]
+print lu_decomposition.lu_inplace(real_matrix3)[1]
 
+print lu_decomposition.lu_out_of_place(real_matrix3)[0]
+print lu_decomposition.lu_out_of_place(real_matrix3)[1]
