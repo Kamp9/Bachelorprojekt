@@ -20,3 +20,4 @@ def backward_substitution(U, z):
     x = np.resize(x, (m, 1))  # kan gøres pænere
     return x
 
+#  virker det stadig?
