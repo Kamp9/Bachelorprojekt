@@ -26,7 +26,7 @@ def cholesky(A):
 
 def solve(A, b):
     """
-    solve(A,b) is only working on positive definite matrix A
+    solve(A, b) is only working on positive definite matrix A
     :param A:
     :param b:
     :return:
