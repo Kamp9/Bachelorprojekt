@@ -9,6 +9,7 @@ def is_pos_def(A):
 
 def cholesky(A):
     if is_pos_def(A):
+        A = np.array(A)
         (m, n) = A.shape
         L = np.zeros((m, m))
         for i in range(m):

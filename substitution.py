@@ -19,5 +19,3 @@ def backward_substitution(U, z):
         x[n-i] = (1.0 / U[n-i, n-i]) * (z[n-i] - np.dot(U[n-i, n-i:], x[n-i:]))
     x = np.resize(x, (m, 1))  # kan gøres pænere
     return x
-
-#  virker det stadig?
