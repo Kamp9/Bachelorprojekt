@@ -11,8 +11,8 @@ real_matrix = np.array([[3.3821, 0.8784, 0.3613, -2.0349],
                         [-2.0349, 0.1169, 0.7807, 2.5397]])
 
 int_matrix2 = np.array([[1, 3, 5],
-                         [2, 4, 7],
-                         [1, 1, 0]])
+                        [2, 4, 7],
+                        [1, 1, 0]])
 
 int_matrix3 = np.array([[8, 2, 9],
                         [4, 9, 4],
@@ -54,7 +54,18 @@ a = np.array([[8, 2, 3], [2, 9, 3], [3, 3, 6]])
 l = cholesky_decomposition.cholesky(a)
 lt = l.transpose()
 
-print lu_decomposition.lu_partial_pivot(real_matrix)[2]
-#  print lu_decomposition.lu_partial_pivot(real_matrix)[1]
-#  print lu_decomposition.lu_partial_pivot(real_matrix)[2]
-print sp.lu(real_matrix)[2]
+rand_matrix2 = np.random.rand(5, 5)
+
+
+#  print rand_matrix
+
+#  print lu_decomposition.lu_partial_pivot(rand_matrix2)[2]
+#  print lu_decomposition.lu_partial_pivot(real_matrix2)[1]
+#  print lu_decomposition.lu_partial_pivot(real_matrix2)[2]
+#  print sp.lu(rand_matrix2)[2]
+
+# print sp.lu(rand_matrix2)[0] == lu_decomposition.lu_partial_pivot(rand_matrix)[0]
+
+print (4, 4)[0] + 6
+print (4, 4)[1] + 100
+
