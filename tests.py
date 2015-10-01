@@ -43,6 +43,10 @@ b = np.array([[7],
 
 #  (P, L, U) = sp.linalg.lu(int_matrix2)
 
+bb = np.array([[7],
+               [-4.153],
+               [43]])
+
 fun = np.array([[0.5],
                 [0.75]])
 
@@ -66,6 +70,14 @@ rand_matrix2 = np.random.rand(5, 5)
 
 # print sp.lu(rand_matrix2)[0] == lu_decomposition.lu_partial_pivot(rand_matrix)[0]
 
-print (4, 4)[0] + 6
-print (4, 4)[1] + 100
+
+lalala = np.array([[2, 3, 4],
+                   [4, 7, 5],
+                   [4, 9, 5]])
+
+(P, L, U) = lu_decomposition.lu_partial_pivot(lalala)
+
+print sp.solve(lalala, bb)
+
+print lu_decomposition.partial_solve(np.dot(U, np.dot(P, L)), bb)
 
