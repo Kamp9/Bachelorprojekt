@@ -58,7 +58,7 @@ a = np.array([[8, 2, 3], [2, 9, 3], [3, 3, 6]])
 l = cholesky_decomposition.cholesky(a)
 lt = l.transpose()
 
-rand_matrix2 = np.random.rand(5, 5)
+rand_matrix2 = np.random.rand(4, 4)
 
 
 #  print rand_matrix
@@ -75,9 +75,9 @@ lalala = np.array([[2, 3, 4],
                    [4, 7, 5],
                    [4, 9, 5]])
 
-(P, L, U) = lu_decomposition.lu_partial_pivot(lalala)
 
-print sp.solve(lalala, bb)
+print lu_decomposition.lu_partial_pivot(rand_matrix2)[1] == sp.lu(rand_matrix2)[1]
+print lu_decomposition.lu_partial_pivot(rand_matrix2)[2] == sp.lu(rand_matrix2)[2]
 
-print lu_decomposition.partial_solve(np.dot(U, np.dot(P, L)), bb)
-
+print lu_decomposition.lu_partial_pivot(rand_matrix2)[0]
+print sp.lu(rand_matrix2)[0]

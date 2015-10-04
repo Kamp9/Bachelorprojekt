@@ -39,7 +39,7 @@ def in_place_solve(A, b):
     x = substitution.backward_substitution(U, z)
     return x
 
-
+"""
 def lu_partial_pivot(A):
     (m, n) = A.shape
     L = np.identity(m)
@@ -58,6 +58,36 @@ def lu_partial_pivot(A):
                 temp = L[k, :k].copy()  # kan vi undgå copy()?
                 L[k, :k] = L[pivot, :k]
                 L[pivot, :k] = temp
+        L[k+1:, k] = (1.0 / U[k, k]) * U[k+1:, k]
+        U[k+1:, k+1:] = U[k+1:, k+1:] - L[k+1:, k, np.newaxis] * U[k, k+1:]
+    return P, L, np.triu(U)
+"""
+
+
+def _swap(A, m, k, pivot, upper):  # kan være ikke at tage m med videre er ligeså hurtigt
+    temp = np.empty(m)
+    if upper:
+        temp[k:] = A[k, k:]
+        A[k, k:] = A[pivot, k:]
+        A[pivot, k:] = temp[k:]
+    else:
+        temp[:k] = A[k, :k]
+        A[k, :k] = A[pivot, :k]
+        A[pivot, :k] = temp[:k]
+
+
+def lu_partial_pivot(A):
+    m, n = A.shape
+    L = np.identity(m)
+    P = np.identity(m)  # kan være P = L
+    U = A.astype(np.float64)
+    for k in range(m):
+        pivot = k + np.absolute(U[k:, k]).argmax(axis=0)
+        if k != pivot:
+            _swap(U, m, k, pivot, True)
+            _swap(P, m, 0, pivot, True)
+            if k >= 1:
+                _swap(L, m, k, pivot, False)
         L[k+1:, k] = (1.0 / U[k, k]) * U[k+1:, k]
         U[k+1:, k+1:] = U[k+1:, k+1:] - L[k+1:, k, np.newaxis] * U[k, k+1:]
     return P, L, np.triu(U)
