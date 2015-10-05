@@ -75,3 +75,21 @@ lalala = np.array([[2, 3, 4],
                    [4, 7, 5],
                    [4, 9, 5]])
 
+rooktest = np.array([[2, 5, 15],
+                     [4, 7, 19],
+                     [9, 10, 5]])
+
+
+P, Q, L, U = lu_decomposition.lu_complete_pivot(rooktest)
+
+print np.dot(np.dot(P, np.dot(L, U)), Q)
+
+P2, Q2, L2, U2 = lu_decomposition.lu_rook_pivot(rooktest)
+
+print np.dot(np.dot(P2, np.dot(L2, U2)), Q2)
+
+print np.dot(sp.lu(rooktest)[0], np.dot(sp.lu(rooktest)[1], sp.lu(rooktest)[2]))
+
+print np.dot(Q2, P2)
+
+print sp.lu(rooktest)[0]

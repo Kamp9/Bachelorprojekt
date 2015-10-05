@@ -85,29 +85,6 @@ def _permute(P, L, U, m, k, pivot, pivoting):  # permute skal nok regne m ud via
             _swap_col_upper(U, m, k, y)
             _swap_col_upper(Q, m, 0, y)
             _swap_col_lower(L, m, k, y)
-"""
-        temp = U[k, :].copy()
-        U[k, :] = U[x, :]
-        U[x, :] = temp
-        temp = P[k, :].copy()
-        P[k, :] = P[x, :]
-        P[x, :] = temp
-        if k >= 1:
-            temp = L[k, :k].copy()
-            L[k, :k] = L[x, :k]
-            L[x, :k] = temp
-    if k != y:
-        temp = U[:, k].copy()
-        U[:, k] = U[:, y]
-        U[:, y] = temp
-        temp = Q[:, k].copy()
-        Q[:, k] = Q[:, y]
-        Q[:, y] = temp
-        if k >= 1:
-            temp = L[:k, k].copy()
-            L[:k, k] = L[:k, y]
-            L[:k, y] = temp
-"""
 
 
 def lu_partial_pivot(A):
@@ -123,34 +100,8 @@ def lu_partial_pivot(A):
     return P, L, np.triu(U)
 
 
-def _permutate(P, Q, L, U, k, x, y):
-    if k != x:
-        temp = U[k, :].copy()
-        U[k, :] = U[x, :]
-        U[x, :] = temp
-        temp = P[k, :].copy()
-        P[k, :] = P[x, :]
-        P[x, :] = temp
-        if k >= 1:
-            temp = L[k, :k].copy()
-            L[k, :k] = L[x, :k]
-            L[x, :k] = temp
-    if k != y:
-        temp = U[:, k].copy()
-        U[:, k] = U[:, y]
-        U[:, y] = temp
-        temp = Q[:, k].copy()
-        Q[:, k] = Q[:, y]
-        Q[:, y] = temp
-        if k >= 1:
-            temp = L[:k, k].copy()
-            L[:k, k] = L[:k, y]
-            L[:k, y] = temp
-    return P, Q, L, U
-
-
-def _maxpos(a):
-    return np.unravel_index(np.argmax(np.abs(a)), a.shape)
+def _maxpos(A):
+    return np.unravel_index(np.argmax(np.abs(A)), A.shape)
 
 
 def lu_complete_pivot(A):
@@ -160,7 +111,7 @@ def lu_complete_pivot(A):
     Q = np.identity(m)
     U = A.astype(np.float64)
     for k in range(m):
-        x, y = _maxpos(A[k:, k:])
+        x, y = _maxpos(U[k:, k:])
         x, y = x + k, y + k
         _permute((P, Q), L, U, m, k, (x, y), 1)
         L[k+1:, k] = (1.0 / U[k, k]) * U[k+1:, k]
@@ -175,40 +126,48 @@ def complete_solve(A, b):
     return x
 
 
-"""
-def lu_full_pivot(A):
-    (m, n) = A.shape
+def _maxpos_rook(A):
+    A = np.abs(A)
+    rowindex = A.argmax(axis=0)[0]
+    colmax = np.max(A, axis=0)[0]
+    rowmax = 0.0
+    while rowmax < colmax:  # colindex kan muligvis ikke blive tildelt hvis colmax == 0.0
+        colindex = A.argmax(axis=1)[rowindex]
+        rowmax = np.max(A, axis=1)[rowindex]
+        if colmax < rowmax:
+            rowindex = A.argmax(axis=0)[colindex]
+            colmax = np.max(A, axis=0)[colindex]
+        else:
+            break
+    return rowindex, colindex
+
+
+def _maxpos_rook2(A):
+    A = np.abs(A)
+    colindex = A.argmax(axis=1)[0]
+    rowmax = np.max(A, axis=1)[0]
+    colmax = 0.0
+    while colmax < rowmax:  # colindex kan muligvis ikke blive tildelt hvis colmax == 0.0
+        rowindex = A.argmax(axis=0)[colindex]
+        colmax = np.max(A, axis=0)[colindex]
+        if rowmax < colmax:
+            colindex = A.argmax(axis=1)[rowindex]
+            rowmax = np.max(A, axis=1)[rowindex]
+        else:
+            break
+    return rowindex, colindex
+
+
+def lu_rook_pivot(A):
+    m, n = A.shape
     L = np.identity(m)
-    P = np.identity(m)  # kan være P = L
+    P = np.identity(m)
     Q = np.identity(m)
     U = A.astype(np.float64)
     for k in range(m):
-        x, y = _find_max(A[k:, k:])
-        x, y = (x + k, y + k)
-        if k != x:
-            temp = U[k, :].copy()
-            U[k, :] = U[x, :]
-            U[x, :] = temp
-            temp = P[k, :].copy()
-            P[k, :] = P[x, :]
-            P[x, :] = temp
-            if k >= 1:
-                temp = L[k, :k].copy()
-                L[k, :k] = L[x, :k]
-                L[x, :k] = temp
-        if k != y:
-            temp = U[:, k].copy()
-            U[:, k] = U[:, y]
-            U[:, y] = temp
-            temp = Q[:, k].copy()
-            Q[:, k] = Q[:, y]
-            Q[:, y] = temp
-            if k >= 1:
-                temp = L[:k, k].copy()
-                L[:k, k] = L[:k, y]
-                L[:k, y] = temp
+        x, y = _maxpos_rook(U[k:, k:])
+        x, y = x + k, y + k
+        _permute((P, Q), L, U, m, k, (x, y), 1)
         L[k+1:, k] = (1.0 / U[k, k]) * U[k+1:, k]
         U[k+1:, k+1:] = U[k+1:, k+1:] - L[k+1:, k, np.newaxis] * U[k, k+1:]
     return P, Q, L, np.triu(U)
-
-"""
