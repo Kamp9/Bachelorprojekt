@@ -56,16 +56,16 @@ def _swap_row_lower(A, m, k, pivot):  # kan være ikke at tage m med videre er l
 
 def _swap_col_upper(A, m, k, pivot):  # kan være ikke at tage m med videre er ligeså hurtigt
     temp = np.empty(m)
-    temp[:k+1] = A[:k+1, k]
-    A[:k+1, k] = A[:k+1, pivot]
-    A[:k+1, pivot] = temp[:k+1]
+    temp[k:] = A[k:, k]
+    A[k:, k] = A[k:, pivot]
+    A[k:, pivot] = temp[k:]
 
 
 def _swap_col_lower(A, m, k, pivot):  # kan være ikke at tage m med videre er ligeså hurtigt
     temp = np.empty(m)
-    temp[k+1:] = A[k+1:, k]
-    A[k+1:, k] = A[k+1:, pivot]
-    A[k+1:, pivot] = temp[k+1:]
+    temp[:k] = A[:k, k]
+    A[:k, k] = A[:k, pivot]
+    A[:k, pivot] = temp[:k]
 
 
 def _permute(P, L, U, m, k, pivot, pivoting):  # permute skal nok regne m ud via shape
@@ -78,14 +78,13 @@ def _permute(P, L, U, m, k, pivot, pivoting):  # permute skal nok regne m ud via
         P, Q = P
         x, y = pivot
         if k != x:
-            _swap_row_lower(L, m, k, x)
             _swap_row_upper(U, m, k, x)
             _swap_row_upper(P, m, 0, x)
+            _swap_row_lower(L, m, k, x)
         if k != y:
-            _swap_col_lower(L, m, k, y)
             _swap_col_upper(U, m, k, y)
             _swap_col_upper(Q, m, 0, y)
-
+            _swap_col_lower(L, m, k, y)
 """
         temp = U[k, :].copy()
         U[k, :] = U[x, :]
