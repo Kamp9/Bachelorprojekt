@@ -76,8 +76,15 @@ lalala = np.array([[2, 3, 4],
                    [4, 9, 5]])
 
 
-print lu_decomposition.lu_partial_pivot(rand_matrix2)[1] == sp.lu(rand_matrix2)[1]
-print lu_decomposition.lu_partial_pivot(rand_matrix2)[2] == sp.lu(rand_matrix2)[2]
+print rand_matrix2
 
-print lu_decomposition.lu_partial_pivot(rand_matrix2)[0]
-print sp.lu(rand_matrix2)[0]
+
+print lu_decomposition.lu_complete_pivot(rand_matrix2)[2]
+print sp.lu(rand_matrix2)[1]
+
+
+"""
+temp[:k+1] = A[:k+1, k]
+A[:k+1, k] = A[:pivot, k]
+A[:pivot, k] = temp[:k+1]
+"""
