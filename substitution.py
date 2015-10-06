@@ -5,17 +5,18 @@ import numpy as np
 def forward_substitution(L, b):
     (m, n) = L.shape
     z = np.zeros(m)
-    for i in range(m):
-        z[i] = (1.0 / L[i, i]) * (b[i] - np.dot(L[i, :i], z[:i]))
-    z = np.resize(z, (m, 1))  # kan gøres pænere
+    for k in range(m):
+        z[k] = (1.0 / L[k, k]) * (b[k] - np.dot(L[k, :k], z[:k]))
+    z = z[:, np.newaxis]
     return z
 
 
 def backward_substitution(U, z):
     (m, n) = U.shape
-    n = m - 1                 # kan gøres pænere
+    l = m - 1
     x = np.zeros(m)
-    for i in range(m):
-        x[n-i] = (1.0 / U[n-i, n-i]) * (z[n-i] - np.dot(U[n-i, n-i:], x[n-i:]))
-    x = np.resize(x, (m, 1))  # kan gøres pænere
+    for k in range(m):
+        x[l-k] = (1.0 / U[l-k, l-k]) * (z[l-k] - np.dot(U[l-k, l-k:], x[l-k:]))
+    x = x[:, np.newaxis]
     return x
+

@@ -78,13 +78,13 @@ def _permute(P, L, U, m, k, pivot, pivoting):  # permute skal nok regne m ud via
         P, Q = P
         x, y = pivot
         if k != x:
+            _swap_row_lower(L, m, k, x)
             _swap_row_upper(U, m, k, x)
             _swap_row_upper(P, m, 0, x)
-            _swap_row_lower(L, m, k, x)
         if k != y:
+            _swap_col_lower(L, m, k, y)
             _swap_col_upper(U, m, k, y)
             _swap_col_upper(Q, m, 0, y)
-            _swap_col_lower(L, m, k, y)
 
 
 def lu_partial_pivot(A):
@@ -129,33 +129,35 @@ def complete_solve(A, b):
 def _maxpos_rook(A):
     A = np.abs(A)
     rowindex = A.argmax(axis=0)[0]
-    colmax = np.max(A, axis=0)[0]
+    colmax = A[rowindex][0]
     rowmax = 0.0
     while rowmax < colmax:  # colindex kan muligvis ikke blive tildelt hvis colmax == 0.0
         colindex = A.argmax(axis=1)[rowindex]
-        rowmax = np.max(A, axis=1)[rowindex]
+        rowmax = A[rowindex][colindex]
         if colmax < rowmax:
             rowindex = A.argmax(axis=0)[colindex]
-            colmax = np.max(A, axis=0)[colindex]
+            colmax = A[rowindex][colindex]
         else:
             break
     return rowindex, colindex
 
-
+"""
 def _maxpos_rook2(A):
     A = np.abs(A)
     colindex = A.argmax(axis=1)[0]
-    rowmax = np.max(A, axis=1)[0]
+    rowmax = A[colindex][0]
     colmax = 0.0
+    print colindex, rowmax
     while colmax < rowmax:  # colindex kan muligvis ikke blive tildelt hvis colmax == 0.0
         rowindex = A.argmax(axis=0)[colindex]
-        colmax = np.max(A, axis=0)[colindex]
+        colmax = A[rowindex][colindex]
         if rowmax < colmax:
             colindex = A.argmax(axis=1)[rowindex]
-            rowmax = np.max(A, axis=1)[rowindex]
+            rowmax = A[colindex][rowindex]
         else:
             break
     return rowindex, colindex
+"""
 
 
 def lu_rook_pivot(A):
@@ -168,6 +170,9 @@ def lu_rook_pivot(A):
         x, y = _maxpos_rook(U[k:, k:])
         x, y = x + k, y + k
         _permute((P, Q), L, U, m, k, (x, y), 1)
+        print U
+        print L
         L[k+1:, k] = (1.0 / U[k, k]) * U[k+1:, k]
         U[k+1:, k+1:] = U[k+1:, k+1:] - L[k+1:, k, np.newaxis] * U[k, k+1:]
     return P, Q, L, np.triu(U)
+
