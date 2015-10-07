@@ -60,25 +60,18 @@ lt = l.transpose()
 
 rand_matrix2 = np.random.rand(4, 4)
 
+lalala = np.array([[1, 6, 1],
+                   [1, 1, 1],
+                   [2, 1, 5]])
 
-#  print rand_matrix
-
-#  print lu_decomposition.lu_partial_pivot(rand_matrix2)[2]
-#  print lu_decomposition.lu_partial_pivot(real_matrix2)[1]
-#  print lu_decomposition.lu_partial_pivot(real_matrix2)[2]
-#  print sp.lu(rand_matrix2)[2]
-
-# print sp.lu(rand_matrix2)[0] == lu_decomposition.lu_partial_pivot(rand_matrix)[0]
+rooktest = np.array([[2, 100, 61],
+                     [51, 9, 4],
+                     [6, 53, 112]])
 
 
-lalala = np.array([[2, 3, 4],
-                   [4, 7, 5],
-                   [4, 9, 5]])
+P, Q, L, U = lu_decomposition.lu_complete_pivot(rooktest)
 
-rooktest = np.array([[10, 2, 12],
-                     [4, 5, 6],
-                     [7, 8, 15]])
+print L
+print np.dot(P, np.dot(L, U))
 
-P, Q, L, U = lu_decomposition.lu_rook_pivot(rooktest)
-P2, L2, U2 = sp.lu(rooktest)
-print np.dot(np.dot(P, np.dot(L, U)), Q)
+print

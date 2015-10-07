@@ -40,64 +40,58 @@ def in_place_solve(A, b):
     return x
 
 
-def _swap_row_upper(A, m, k, pivot):  # kan være ikke at tage m med videre er ligeså hurtigt
+def _swap_row(A, m, k, pivot):  # kan være ikke at tage m med videre er ligeså hurtigt
     temp = np.empty(m)
-    temp[k:] = A[k, k:]
-    A[k, k:] = A[pivot, k:]
-    A[pivot, k:] = temp[k:]
+    temp[:] = A[k, :]
+    A[k, :] = A[pivot, :]
+    A[pivot, :] = temp[:]
 
 
-def _swap_row_lower(A, m, k, pivot):  # kan være ikke at tage m med videre er ligeså hurtigt
+def _swap_row_L(A, m, k, pivot):  # Skal vi virkelig have den her?
     temp = np.empty(m)
     temp[:k] = A[k, :k]
     A[k, :k] = A[pivot, :k]
     A[pivot, :k] = temp[:k]
 
 
-def _swap_col_upper(A, m, k, pivot):  # kan være ikke at tage m med videre er ligeså hurtigt
+def _swap_col(A, m, k, pivot):  # kan være ikke at tage m med videre er ligeså hurtigt
     temp = np.empty(m)
-    temp[k:] = A[k:, k]
-    A[k:, k] = A[k:, pivot]
-    A[k:, pivot] = temp[k:]
+    temp[:] = A[:, k]
+    A[:, k] = A[:, pivot]
+    A[:, pivot] = temp[:]
 
 
-def _swap_col_lower(A, m, k, pivot):  # kan være ikke at tage m med videre er ligeså hurtigt
-    temp = np.empty(m)
-    temp[:k] = A[:k, k]
-    A[:k, k] = A[:k, pivot]
-    A[:k, pivot] = temp[:k]
-
-
-def _permute(P, L, U, m, k, pivot, pivoting):  # permute skal nok regne m ud via shape
+def _permute(P, A, L, m, k, pivot, pivoting):  # permute skal nok regne m ud via shape
     if pivoting == 0:
         if k != pivot:
-            _swap_row_lower(L, m, k, pivot)
-            _swap_row_upper(U, m, k, pivot)
-            _swap_row_upper(P, m, 0, pivot)
+            _swap_row(P, m, k, pivot)
+            _swap_row(A, m, k, pivot)
+            _swap_row_L(L, m, k, pivot)  # Ihh altså
+
     if pivoting == 1:
         P, Q = P
         x, y = pivot
         if k != x:
-            _swap_row_lower(L, m, k, x)
-            _swap_row_upper(U, m, k, x)
-            _swap_row_upper(P, m, 0, x)
+            _swap_row(A, m, k, x)
+            _swap_row(P, m, k, x)
         if k != y:
-            _swap_col_lower(L, m, k, y)
-            _swap_col_upper(U, m, k, y)
-            _swap_col_upper(Q, m, 0, y)
+            _swap_col(A, m, k, y)
+            _swap_col(Q, m, k, y)
 
 
 def lu_partial_pivot(A):
     m, n = A.shape
-    L = np.identity(m)
+    A = A.astype(np.float64)
     P = np.identity(m)
-    U = A.astype(np.float64)
+    L = np.identity(m)
+    U = np.zeros((m, m))
     for k in range(m):
-        pivot = k + np.absolute(U[k:, k]).argmax(axis=0)
-        _permute(P, L, U, m, k, pivot, 0)
-        L[k+1:, k] = (1.0 / U[k, k]) * U[k+1:, k]
-        U[k+1:, k+1:] = U[k+1:, k+1:] - L[k+1:, k, np.newaxis] * U[k, k+1:]
-    return P, L, np.triu(U)
+        pivot = k + np.abs(A[k:, k]).argmax(axis=0)
+        _permute(P, A, L, m, k, pivot, 0)
+        U[k, k:] = A[k, k:]
+        L[k+1:, k] = (1.0 / A[k, k]) * A[k+1:, k]
+        A[k+1:, k+1:] = A[k+1:, k+1:] - L[k+1:, k, np.newaxis] * U[k, k+1:]
+    return P, L, U
 
 
 def _maxpos(A):
@@ -106,17 +100,20 @@ def _maxpos(A):
 
 def lu_complete_pivot(A):
     m, n = A.shape
+    A = A.astype(np.float64)
     L = np.identity(m)
     P = np.identity(m)
     Q = np.identity(m)
-    U = A.astype(np.float64)
+    U = np.zeros((m, m))
     for k in range(m):
-        x, y = _maxpos(U[k:, k:])
+        x, y = _maxpos(A[k:, k:])
         x, y = x + k, y + k
-        _permute((P, Q), L, U, m, k, (x, y), 1)
-        L[k+1:, k] = (1.0 / U[k, k]) * U[k+1:, k]
-        U[k+1:, k+1:] = U[k+1:, k+1:] - L[k+1:, k, np.newaxis] * U[k, k+1:]
-    return P, Q, L, np.triu(U)
+        _permute((P, Q), A, L, m, k, (x, y), 1)
+        U[k, k:] = A[k, k:]
+        L[k+1:, k] = (1.0 / A[k, k]) * A[k+1:, k]
+        A[k+1:, k+1:] = A[k+1:, k+1:] - L[k+1:, k, np.newaxis] * U[k, k+1:]
+
+    return P, Q, L, U
 
 
 def complete_solve(A, b):
@@ -130,8 +127,8 @@ def _maxpos_rook(A):
     A = np.abs(A)
     rowindex = A.argmax(axis=0)[0]
     colmax = A[rowindex][0]
-    rowmax = 0.0
-    while rowmax < colmax:  # colindex kan muligvis ikke blive tildelt hvis colmax == 0.0
+    rowmax = -1
+    while rowmax < colmax:
         colindex = A.argmax(axis=1)[rowindex]
         rowmax = A[rowindex][colindex]
         if colmax < rowmax:
@@ -141,24 +138,6 @@ def _maxpos_rook(A):
             break
     return rowindex, colindex
 
-"""
-def _maxpos_rook2(A):
-    A = np.abs(A)
-    colindex = A.argmax(axis=1)[0]
-    rowmax = A[colindex][0]
-    colmax = 0.0
-    print colindex, rowmax
-    while colmax < rowmax:  # colindex kan muligvis ikke blive tildelt hvis colmax == 0.0
-        rowindex = A.argmax(axis=0)[colindex]
-        colmax = A[rowindex][colindex]
-        if rowmax < colmax:
-            colindex = A.argmax(axis=1)[rowindex]
-            rowmax = A[colindex][rowindex]
-        else:
-            break
-    return rowindex, colindex
-"""
-
 
 def lu_rook_pivot(A):
     m, n = A.shape
@@ -167,12 +146,11 @@ def lu_rook_pivot(A):
     Q = np.identity(m)
     U = A.astype(np.float64)
     for k in range(m):
-        x, y = _maxpos_rook(U[k:, k:])
+        x, y = _maxpos_rook(A[k:, k:])
         x, y = x + k, y + k
-        _permute((P, Q), L, U, m, k, (x, y), 1)
-        print U
-        print L
-        L[k+1:, k] = (1.0 / U[k, k]) * U[k+1:, k]
-        U[k+1:, k+1:] = U[k+1:, k+1:] - L[k+1:, k, np.newaxis] * U[k, k+1:]
-    return P, Q, L, np.triu(U)
+        _permute((P, Q), A, m, k, (x, y), 1)
+        U[k, k:] = A[k, k:]
+        L[k+1:, k] = (1.0 / A[k, k]) * A[k+1:, k]
+        A[k+1:, k+1:] = A[k+1:, k+1:] - L[k+1:, k, np.newaxis] * U[k, k+1:]
+    return P, Q, L, U
 
