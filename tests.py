@@ -6,9 +6,9 @@ import substitution
 from numpy.testing import TestCase, assert_array_almost_equal
 
 real_matrix = np.array([[3.3821, 0.8784, 0.3613, -2.0349],
-                        [0.8784, 2.0068, 0.5587, 0.1169],
+                        [0.8784, 2.0068, 0.5587, 32.1169],
                         [0.3613, 0.5587, 3.6656, 0.7807],
-                        [-2.0349, 0.1169, 0.7807, 2.5397]])
+                        [-100.0349, 0.1169, 11.7807, 2.5397]])
 
 int_matrix2 = np.array([[1, 3, 5],
                         [2, 4, 7],
@@ -64,14 +64,12 @@ lalala = np.array([[1, 6, 1],
                    [1, 1, 1],
                    [2, 1, 5]])
 
-rooktest = np.array([[2, 100, 61],
-                     [51, 9, 4],
-                     [6, 53, 112]])
+rooktest = np.array([[1, 2, 515],
+                     [4, 553, 6],
+                     [75, 8, 513]])
 
 
 P, Q, L, U = lu_decomposition.lu_complete_pivot(rooktest)
 
-print L
-print np.dot(P, np.dot(L, U))
+P2, Q2, L2, U2 = lu_decomposition.lu_rook_pivot(real_matrix)
 
-print
