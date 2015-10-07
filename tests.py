@@ -64,12 +64,12 @@ lalala = np.array([[1, 6, 1],
                    [1, 1, 1],
                    [2, 1, 5]])
 
-rooktest = np.array([[1, 2, 515],
-                     [4, 553, 6],
-                     [75, 8, 513]])
+rooktest = np.array([[15, 800, 6426],
+                     [4, 553, 7000],
+                     [700, 732, 513]])
 
 
-P, Q, L, U = lu_decomposition.lu_complete_pivot(rooktest)
+P, Q, L, U = lu_decomposition.lu_rook_pivot(rooktest)
 
 P2, Q2, L2, U2 = lu_decomposition.lu_rook_pivot(real_matrix)
-
+print np.dot(L, U)
