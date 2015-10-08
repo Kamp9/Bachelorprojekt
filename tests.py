@@ -60,16 +60,15 @@ lt = l.transpose()
 
 rand_matrix2 = np.random.rand(4, 4)
 
-lalala = np.array([[1, 6, 1],
-                   [1, 1, 1],
-                   [2, 1, 5]])
+lalala = np.array([[1, 2, 3],
+                   [4, 5, 6],
+                   [7, 8, 9]])
 
-rooktest = np.array([[15, 800, 6426],
-                     [4, 553, 7000],
-                     [700, 732, 513]])
+rooktest = np.array([[1553, 800, 642],
+                     [4, 55353, 700],
+                     [9000, 732, 513]])
 
 
-P, Q, L, U = lu_decomposition.lu_rook_pivot(rooktest)
+P, Q, L, U = lu_decomposition.lu_rook_pivot(rand_matrix2)
 
-P2, Q2, L2, U2 = lu_decomposition.lu_rook_pivot(real_matrix)
-print np.dot(L, U)
+

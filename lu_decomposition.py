@@ -26,20 +26,6 @@ def lu_out_of_place(A):
     return L, U
 
 
-def out_of_place_solve(A, b):
-    L, U = lu_out_of_place(A)  # kan også være lu_out_of_place(A)
-    z = substitution.forward_substitution(L, b)
-    x = substitution.backward_substitution(U, z)
-    return x
-
-
-def in_place_solve(A, b):
-    L, U = lu_inplace(A)  # kan også være lu_out_of_place(A)
-    z = substitution.forward_substitution(L, b)
-    x = substitution.backward_substitution(U, z)
-    return x
-
-
 def _swap_row(A, m, k, pivot):
     temp = np.empty(m)
     temp[:] = A[k, :]
@@ -125,11 +111,11 @@ def lu_partial_pivot(A):
     U = np.zeros((m, m))
     for k in range(m):
         pivot = k + find_pivot(A[k:, k], 0)
-        _permute(P, A, L, P, m, k, pivot, 0)
+        _permute(P, A, L, U, m, k, pivot, 0)
         U[k, k:] = A[k, k:]
         L[k+1:, k] = (1.0 / A[k, k]) * A[k+1:, k]
         A[k+1:, k+1:] = A[k+1:, k+1:] - L[k+1:, k, np.newaxis] * U[k, k+1:]
-    return P, L, U
+    return P.transpose(), L, U
 
 
 def lu_complete_pivot(A):
@@ -146,14 +132,7 @@ def lu_complete_pivot(A):
         U[k, k:] = A[k, k:]
         L[k+1:, k] = (1.0 / A[k, k]) * A[k+1:, k]
         A[k+1:, k+1:] = A[k+1:, k+1:] - L[k+1:, k, np.newaxis] * U[k, k+1:]
-    return P, Q, L, U
-
-
-def complete_solve(A, b):
-    P, Q, L, U = lu_complete_pivot(A)  # kan også være lu_out_of_place(A)
-    z = substitution.forward_substitution(L, b)
-    x = substitution.backward_substitution(U, z)
-    return x
+    return P.transpose(), Q.transpose(), L, U
 
 
 def lu_rook_pivot(A):
@@ -170,5 +149,27 @@ def lu_rook_pivot(A):
         U[k, k:] = A[k, k:]
         L[k+1:, k] = (1.0 / A[k, k]) * A[k+1:, k]
         A[k+1:, k+1:] = A[k+1:, k+1:] - L[k+1:, k, np.newaxis] * U[k, k+1:]
-    return P, Q, L, U
+    return P.transpose(), Q.transpose(), L, U
 
+
+def solve(A, b, pivoting):
+    # No pivoting
+    if pivoting == 0:
+        L, U = lu_out_of_place(A)
+        z = substitution.forward_substitution(L, b)
+        x = substitution.backward_substitution(U, z)
+
+def complete_solve(A, b):
+    P, Q, L, U = lu_complete_pivot(A)  # kan også være lu_out_of_place(A)
+    z = substitution.forward_substitution(L, b)
+    x = substitution.backward_substitution(U, z)
+    return x
+
+
+def out_of_place_solve(A, b):
+    L, U = lu_out_of_place(A)  # kan også være lu_out_of_place(A)
+    z = substitution.forward_substitution(L, b)
+    x = substitution.backward_substitution(U, z)
+    return x
+
+print
