@@ -1,6 +1,5 @@
 # coding=utf-8
 import numpy as np
-import substitution
 
 
 def lu_inplace(A):
@@ -26,57 +25,7 @@ def lu_out_of_place(A):
     return L, U
 
 
-def _swap_row(A, m, k, pivot):
-    temp = np.empty(m)
-    temp[:] = A[k, :]
-    A[k, :] = A[pivot, :]
-    A[pivot, :] = temp[:]
-
-
-def _swap_row_L(A, m, k, pivot):  # Skal vi virkelig have den her?
-    temp = np.empty(m)
-    temp[:k] = A[k, :k]
-    A[k, :k] = A[pivot, :k]
-    A[pivot, :k] = temp[:k]
-
-
-def _swap_col(A, m, k, pivot):
-    temp = np.empty(m)
-    temp[:] = A[:, k]
-    A[:, k] = A[:, pivot]
-    A[:, pivot] = temp[:]
-
-
-def _swap_col_U(A, m, k, pivot):  # Skal vi virkelig have den her?
-    temp = np.empty(m)
-    temp[:k] = A[:k, k]
-    A[:k, k] = A[:k, pivot]
-    A[:k, pivot] = temp[:k]
-
-
-def _permute(P, A, L, U, m, k, pivot, pivoting):  # permute skal nok regne m ud via shape
-    # One dimensional pivoting
-    if pivoting == 0:
-        if k != pivot:
-            _swap_row(P, m, k, pivot)
-            _swap_row(A, m, k, pivot)
-            _swap_row_L(L, m, k, pivot)  # Ihh altså
-
-    # Two dimensional pivoting
-    if pivoting == 1:
-        P, Q = P
-        x, y = pivot
-        if k != x:
-            _swap_row(A, m, k, x)
-            _swap_row(P, m, k, x)
-            _swap_row_L(L, m, k, x)  # Ihh altså
-        if k != y:
-            _swap_col(A, m, k, y)
-            _swap_col(Q, m, k, y)
-            _swap_col_U(U, m, k, y)  # Ihh altså
-
-
-def find_pivot(A, pivoting):
+def _find_pivot(A, pivoting):
     A = np.abs(A)
 
     # partial pivoting
@@ -103,6 +52,56 @@ def find_pivot(A, pivoting):
         return rowindex, colindex
 
 
+def _swap_row(A, m, k, pivot):
+    temp = np.empty(m)
+    temp[:] = A[k, :]
+    A[k, :] = A[pivot, :]
+    A[pivot, :] = temp[:]
+
+
+def _swap_row_to_k(A, m, k, pivot):  # Skal vi virkelig have den her?
+    temp = np.empty(m)
+    temp[:k] = A[k, :k]
+    A[k, :k] = A[pivot, :k]
+    A[pivot, :k] = temp[:k]
+
+
+def _swap_col(A, m, k, pivot):
+    temp = np.empty(m)
+    temp[:] = A[:, k]
+    A[:, k] = A[:, pivot]
+    A[:, pivot] = temp[:]
+
+
+def _swap_col_to_k(A, m, k, pivot):  # Skal vi virkelig have den her?
+    temp = np.empty(m)
+    temp[:k] = A[:k, k]
+    A[:k, k] = A[:k, pivot]
+    A[:k, pivot] = temp[:k]
+
+
+def _permute(P, A, L, U, m, k, pivot, pivoting):  # permute skal nok regne m ud via shape
+    # One dimensional pivoting
+    if pivoting == 0:
+        if k != pivot:
+            _swap_row(P, m, k, pivot)
+            _swap_row(A, m, k, pivot)
+            _swap_row_to_k(L, m, k, pivot)
+
+    # Two dimensional pivoting
+    if pivoting == 1:
+        P, Q = P
+        x, y = pivot
+        if k != x:
+            _swap_row(A, m, k, x)
+            _swap_row(P, m, k, x)
+            _swap_row_to_k(L, m, k, x)
+        if k != y:
+            _swap_col(A, m, k, y)
+            _swap_col(Q, m, k, y)
+            _swap_col_to_k(U, m, k, y)
+
+
 def lu_partial_pivot(A):
     m, n = A.shape
     A = A.astype(np.float64)
@@ -110,7 +109,7 @@ def lu_partial_pivot(A):
     L = np.identity(m)
     U = np.zeros((m, m))
     for k in range(m):
-        pivot = k + find_pivot(A[k:, k], 0)
+        pivot = k + _find_pivot(A[k:, k], 0)
         _permute(P, A, L, U, m, k, pivot, 0)
         U[k, k:] = A[k, k:]
         L[k+1:, k] = (1.0 / A[k, k]) * A[k+1:, k]
@@ -126,7 +125,7 @@ def lu_complete_pivot(A):
     L = np.identity(m)
     U = np.zeros((m, m))
     for k in range(m):
-        x, y = find_pivot(A[k:, k:], 1)
+        x, y = _find_pivot(A[k:, k:], 1)
         x, y = x + k, y + k
         _permute((P, Q), A, L, U, m, k, (x, y), 1)
         U[k, k:] = A[k, k:]
@@ -143,7 +142,7 @@ def lu_rook_pivot(A):
     L = np.identity(m)
     U = np.zeros((m, m))
     for k in range(m):
-        x, y = find_pivot(A[k:, k:], 2)
+        x, y = _find_pivot(A[k:, k:], 2)
         x, y = x + k, y + k
         _permute((P, Q), A, L, U, m, k, (x, y), 1)
         U[k, k:] = A[k, k:]
@@ -151,25 +150,3 @@ def lu_rook_pivot(A):
         A[k+1:, k+1:] = A[k+1:, k+1:] - L[k+1:, k, np.newaxis] * U[k, k+1:]
     return P.transpose(), Q.transpose(), L, U
 
-
-def solve(A, b, pivoting):
-    # No pivoting
-    if pivoting == 0:
-        L, U = lu_out_of_place(A)
-        z = substitution.forward_substitution(L, b)
-        x = substitution.backward_substitution(U, z)
-
-def complete_solve(A, b):
-    P, Q, L, U = lu_complete_pivot(A)  # kan også være lu_out_of_place(A)
-    z = substitution.forward_substitution(L, b)
-    x = substitution.backward_substitution(U, z)
-    return x
-
-
-def out_of_place_solve(A, b):
-    L, U = lu_out_of_place(A)  # kan også være lu_out_of_place(A)
-    z = substitution.forward_substitution(L, b)
-    x = substitution.backward_substitution(U, z)
-    return x
-
-print

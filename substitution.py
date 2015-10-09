@@ -1,8 +1,9 @@
 # coding=utf-8
 import numpy as np
+import lu_decomposition
 
 
-def forward_substitution(L, b):
+def _forward_substitution(L, b):
     (m, n) = L.shape
     z = np.zeros(m)
     for k in range(m):
@@ -11,7 +12,7 @@ def forward_substitution(L, b):
     return z
 
 
-def backward_substitution(U, z):
+def _back_substitution(U, z):
     (m, n) = U.shape
     l = m - 1
     x = np.zeros(m)
@@ -20,3 +21,24 @@ def backward_substitution(U, z):
     x = x[:, np.newaxis]
     return x
 
+
+def solve(A, b, pivoting):
+    # No pivoting
+    if pivoting == 0:
+        L, U = lu_decomposition.lu_out_of_place(A)
+        z = _forward_substitution(L, b)
+        x = _back_substitution(U, z)
+
+
+def complete_solve(A, b):
+    P, Q, L, U = lu_complete_pivot(A)  # kan også være lu_out_of_place(A)
+    z = substitution.forward_substitution(L, b)
+    x = substitution.backward_substitution(U, z)
+    return x
+
+
+def out_of_place_solve(A, b):
+    L, U = lu_out_of_place(A)  # kan også være lu_out_of_place(A)
+    z = substitution.forward_substitution(L, b)
+    x = substitution.backward_substitution(U, z)
+    return x
