@@ -1,6 +1,6 @@
 # coding=utf-8
 import numpy as np
-import substitution
+import solve
 
 
 def is_pos_def(A):
@@ -34,7 +34,7 @@ def solve(A, b):
     """
     L = cholesky(A)
     U = L.transpose()
-    z = substitution.forward_substitution(L, b)
-    x = substitution.backward_substitution(U, z)
+    z = solve.forward_substitution(L, b)
+    x = solve.backward_substitution(U, z)
     return x
 

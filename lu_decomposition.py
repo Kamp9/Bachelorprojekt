@@ -59,7 +59,7 @@ def _swap_row(A, m, k, pivot):
     A[pivot, :] = temp[:]
 
 
-def _swap_row_to_k(A, m, k, pivot):  # Skal vi virkelig have den her?
+def _swap_row_to_k(A, m, k, pivot):
     temp = np.empty(m)
     temp[:k] = A[k, :k]
     A[k, :k] = A[pivot, :k]
@@ -73,7 +73,7 @@ def _swap_col(A, m, k, pivot):
     A[:, pivot] = temp[:]
 
 
-def _swap_col_to_k(A, m, k, pivot):  # Skal vi virkelig have den her?
+def _swap_col_to_k(A, m, k, pivot):
     temp = np.empty(m)
     temp[:k] = A[:k, k]
     A[:k, k] = A[:k, pivot]

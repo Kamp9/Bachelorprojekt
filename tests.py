@@ -2,7 +2,7 @@ import numpy as np
 import scipy.linalg as sp
 import cholesky_decomposition
 import lu_decomposition
-import substitution
+import solve
 from numpy.testing import TestCase, assert_array_almost_equal
 
 real_matrix = np.array([[3.3821, 0.8784, 0.3613, -2.0349],
@@ -36,11 +36,6 @@ LU = matrix1 * matrix2
 A = np.array([[9, 4],
               [7, 9]])
 
-b = np.array([[7],
-              [-4.153],
-              [43],
-              [61.13]])
-
 #  (P, L, U) = sp.linalg.lu(int_matrix2)
 
 bb = np.array([[7],
@@ -68,7 +63,11 @@ rooktest = np.array([[1553, 800, 642],
                      [4, 55353, 700],
                      [9000, 732, 513]])
 
+a = np.array([[5164, 1351, 6511], [-1351, -135315, 62], [0.00003135, -5, 13646]])
+b = np.array([4, 61, -3])
 
-P, Q, L, U = lu_decomposition.lu_rook_pivot(rand_matrix2)
 
-
+print sp.solve(a, b)
+print solve.solve(a, b, 0)
+print solve.solve(a, b, 1)
+print solve.solve(a, b, 2)
