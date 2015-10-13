@@ -5,6 +5,10 @@ import lu_decomposition
 import solve
 from numpy.testing import TestCase, assert_array_almost_equal
 
+"""
+profiling
+"""
+
 real_matrix = np.array([[3.3821, 0.8784, 0.3613, -2.0349],
                         [0.8784, 2.0068, 0.5587, 32.1169],
                         [0.3613, 0.5587, 3.6656, 0.7807],
@@ -31,8 +35,6 @@ matrix1 = np.array([[0.5],
 
 matrix2 = np.array([2, 9])
 
-LU = matrix1 * matrix2
-
 A = np.array([[9, 4],
               [7, 9]])
 
@@ -53,7 +55,8 @@ a = np.array([[8, 2, 3], [2, 9, 3], [3, 3, 6]])
 l = cholesky_decomposition.cholesky(a)
 lt = l.transpose()
 
-rand_matrix2 = np.random.rand(4, 4)
+rand_matrix2 = np.random.rand(15, 15)
+rand_col = np.random.rand(15, 1)
 
 lalala = np.array([[1, 2, 3],
                    [4, 5, 6],
@@ -63,11 +66,14 @@ rooktest = np.array([[155, -800, 642],
                      [-4, 553, 700],
                      [-900, 732, 513]])
 
-a = np.array([[0, -13451, 6511], [-1351, -115, 62], [0.00003135, -5, 13646]])
+a = np.array([[5315353, -5313451, 65153511], [-1355351, -35315, 35362], [0.00005353135, -5, 13646]])
 b = np.array([4, 61, -3])
 
 
-P, L, U = lu_decomposition.lu_partial_pivot(rooktest)
+P, Q, L, U = lu_decomposition.lu_complete_pivot(rand_matrix2)
 
+LU = np.dot(np.dot(P, np.dot(L, U)), Q)
 
-print U
+P2, L2, U2 = sp.lu(rand_matrix2)
+
+LU2 = np.dot(P2, np.dot(L2, U2))
