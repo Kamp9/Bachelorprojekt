@@ -59,15 +59,15 @@ lalala = np.array([[1, 2, 3],
                    [4, 5, 6],
                    [7, 8, 9]])
 
-rooktest = np.array([[1553, 800, 642],
-                     [4, 55353, 700],
-                     [9000, 732, 513]])
+rooktest = np.array([[155, -800, 642],
+                     [-4, 553, 700],
+                     [-900, 732, 513]])
 
-a = np.array([[5164, 1351, 6511], [-1351, -135315, 62], [0.00003135, -5, 13646]])
+a = np.array([[0, -13451, 6511], [-1351, -115, 62], [0.00003135, -5, 13646]])
 b = np.array([4, 61, -3])
 
 
-print sp.solve(a, b)
-print solve.solve(a, b, 0)
-print solve.solve(a, b, 1)
-print solve.solve(a, b, 2)
+P, L, U = lu_decomposition.lu_partial_pivot(rooktest)
+
+
+print U

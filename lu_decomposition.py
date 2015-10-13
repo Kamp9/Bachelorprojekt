@@ -30,7 +30,7 @@ def _find_pivot(A, pivoting):
 
     # partial pivoting
     if pivoting == 0:
-        return A.argmax(axis=0)
+        return np.abs(A).argmax(axis=0)
 
     # complete pivoting
     if pivoting == 1:
@@ -81,6 +81,7 @@ def _swap_col_to_k(A, m, k, pivot):
 
 
 def _permute(P, A, L, U, m, k, pivot, pivoting):  # permute skal nok regne m ud via shape
+
     # One dimensional pivoting
     if pivoting == 0:
         if k != pivot:
