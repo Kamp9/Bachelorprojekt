@@ -61,6 +61,5 @@ LU = np.dot(np.dot(P, np.dot(L, U)), Q)
 
 P2, L2, U2 = sp.lu(rooktest)
 
-x = solve.solve(rooktest, b, 1)
-print x
-print sp.solve(rand_matrix2, rand_col)
+x = solve.solve(rand_matrix2, rand_col, 2)
+

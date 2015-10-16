@@ -9,10 +9,19 @@ import solve
 class TestCholesky(TestCase):
 
     def test_simple(self):
-        rand_matrix2 = np.random.rand(10, 10)
-        rand_col = np.random.rand(10, 1)
-        # P, Q, L, U = lu_decomposition.lu_rook_pivot(rand_matrix2)
-        # P2, L2, U2 = sp.lu(rand_matrix2)
-        assert_array_almost_equal(sp.solve(rand_matrix2, rand_col), solve.solve(rand_matrix2, rand_col, 0), decimal=9)
-        assert_array_almost_equal(sp.solve(rand_matrix2, rand_col), solve.solve(rand_matrix2, rand_col, 1), decimal=9)
-        # assert_array_almost_equal(sp.solve(rand_matrix2, rand_col), solve.solve(rand_matrix2, rand_col, 2), decimal=9)
+        rand_matrix = np.random.rand(1000, 1000)
+        rand_col = np.random.rand(1000, 1)
+        sp_solve = sp.solve(rand_matrix, rand_col)
+        assert_array_almost_equal(sp_solve, solve.solve(rand_matrix, rand_col, 0), decimal=6)
+        assert_array_almost_equal(sp_solve, solve.solve(rand_matrix, rand_col, 1), decimal=6)
+        assert_array_almost_equal(sp_solve, solve.solve(rand_matrix, rand_col, 2), decimal=6)
+        assert_array_almost_equal(sp_solve, solve.solve(rand_matrix, rand_col, 3), decimal=6)
+
+        rand_int_matrix = np.random.randint(-1000, 1000, size=(1000, 1000))
+        rand_int_col = np.random.randint(-1000, 1000, size=(1000, 1))
+        sp_solve2 = sp.solve(rand_int_matrix, rand_int_col)
+        assert_array_almost_equal(sp_solve2, solve.solve(rand_int_matrix, rand_int_col, 0), decimal=6)
+        assert_array_almost_equal(sp_solve2, solve.solve(rand_int_matrix, rand_int_col, 1), decimal=6)
+        assert_array_almost_equal(sp_solve2, solve.solve(rand_int_matrix, rand_int_col, 2), decimal=6)
+        assert_array_almost_equal(sp_solve2, solve.solve(rand_int_matrix, rand_int_col, 3), decimal=6)
+
