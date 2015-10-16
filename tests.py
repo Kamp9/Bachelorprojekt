@@ -38,42 +38,29 @@ matrix2 = np.array([2, 9])
 A = np.array([[9, 4],
               [7, 9]])
 
-#  (P, L, U) = sp.linalg.lu(int_matrix2)
 
-bb = np.array([[7],
-               [-4.153],
-               [43]])
-
-fun = np.array([[0.5],
-                [0.75]])
-
-fun2 = np.array([[2, 9]])
-
-fun3 = np.array([[0.5, 0.75]])
-
-a = np.array([[8, 2, 3], [2, 9, 3], [3, 3, 6]])
-l = cholesky_decomposition.cholesky(a)
-lt = l.transpose()
-
-rand_matrix2 = np.random.rand(15, 15)
-rand_col = np.random.rand(15, 1)
+rand_matrix2 = np.random.rand(4, 4)
+rand_col = np.random.rand(4, 1)
 
 lalala = np.array([[1, 2, 3],
                    [4, 5, 6],
                    [7, 8, 9]])
 
-rooktest = np.array([[155, -800, 642],
-                     [-4, 553, 700],
-                     [-900, 732, 513]])
+rooktest = np.array([[155, -800, 642, 531],
+                     [-4, 553, 700, 1],
+                     [-900, 732, 513, 35],
+                     [-3, 53, 1, -353]])
 
 a = np.array([[5315353, -5313451, 65153511], [-1355351, -35315, 35362], [0.00005353135, -5, 13646]])
-b = np.array([4, 61, -3])
+b = np.array([4133, 6421, -533, -5533])
 
 
-P, Q, L, U = lu_decomposition.lu_complete_pivot(rand_matrix2)
+P, Q, L, U = lu_decomposition.lu_complete_pivot(rooktest)
 
 LU = np.dot(np.dot(P, np.dot(L, U)), Q)
 
-P2, L2, U2 = sp.lu(rand_matrix2)
+P2, L2, U2 = sp.lu(rooktest)
 
-LU2 = np.dot(P2, np.dot(L2, U2))
+x = solve.solve(rooktest, b, 1)
+print x
+print sp.solve(rand_matrix2, rand_col)
