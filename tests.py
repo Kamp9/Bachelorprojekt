@@ -1,8 +1,11 @@
+import cProfile
 import numpy as np
 import scipy.linalg as sp
 import cholesky_decomposition
 import lu_decomposition
+import lu_decomposition2
 import solve
+import real_test
 from numpy.testing import TestCase, assert_array_almost_equal
 
 """
@@ -39,27 +42,27 @@ A = np.array([[9, 4],
               [7, 9]])
 
 
-rand_matrix2 = np.random.rand(4, 4)
-rand_col = np.random.rand(4, 1)
+rand_matrix2 = np.random.rand(1000, 1000)
+rand_col = np.random.rand(1000, 1)
 
 lalala = np.array([[1, 2, 3],
                    [4, 5, 6],
                    [7, 8, 9]])
 
-rooktest = np.array([[155, -800, 642, 531],
+rooktest = np.array([[155, 53113531513, 642, 531],
                      [-4, 553, 700, 1],
-                     [-900, 732, 513, 35],
-                     [-3, 53, 1, -353]])
+                     [-90053, 53536464, 513, 35],
+                     [-53353, 53, 1000, -353]])
 
 a = np.array([[5315353, -5313451, 65153511], [-1355351, -35315, 35362], [0.00005353135, -5, 13646]])
 b = np.array([4133, 6421, -533, -5533])
 
 
-P, Q, L, U = lu_decomposition.lu_complete_pivot(rooktest)
+P, Q, L, U = lu_decomposition.lu_rook_pivot(rooktest)
 
-LU = np.dot(np.dot(P, np.dot(L, U)), Q)
+# cProfile.run('sp.solve(rand_matrix2, rand_col)')
+# cProfile.run('solve.solve(rand_matrix2, rand_col, 1)')
 
-P2, L2, U2 = sp.lu(rooktest)
+P2, Q2, L2, U2 = lu_decomposition2.lu_complete_pivot(rooktest)
 
-x = solve.solve(rand_matrix2, rand_col, 2)
-
+print np.dot(L2, U2)

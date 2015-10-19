@@ -7,7 +7,6 @@ import solve
 
 
 class TestCholesky(TestCase):
-
     def test_simple(self):
         rand_matrix = np.random.rand(1000, 1000)
         rand_col = np.random.rand(1000, 1)

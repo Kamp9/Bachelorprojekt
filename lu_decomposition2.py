@@ -114,9 +114,9 @@ def lu_complete_pivot(A):
     Q = np.identity(m)
     L = np.identity(m)
     for k in range(m):
-        x, y = _find_pivot(U[k:, k:], 1)
-        x, y = x + k, y + k
-        _permute((P, Q), L, U, m, k, (x, y), 1)
+        i, j = _find_pivot(U[k:, k:], 1)
+        i, j = i + k, j + k
+        _permute((P, Q), L, U, m, k, (i, j), 1)
         L[k+1:, k] = (1.0 / U[k, k]) * U[k+1:, k]
         U[k+1:, k+1:] = U[k+1:, k+1:] - L[k+1:, k, np.newaxis] * U[k, k+1:]
     return P.transpose(), Q.transpose(), L, np.triu(U)
@@ -129,9 +129,9 @@ def lu_rook_pivot(A):
     Q = np.identity(m)
     L = np.identity(m)
     for k in range(m):
-        x, y = _find_pivot(U[k:, k:], 2)
-        x, y = x + k, y + k
-        _permute((P, Q), L, U, m, k, (x, y), 1)
+        i, j = _find_pivot(U[k:, k:], 2)
+        i, j = i + k, j + k
+        _permute((P, Q), L, U, m, k, (i, j), 1)
         L[k+1:, k] = (1.0 / U[k, k]) * U[k+1:, k]
         U[k+1:, k+1:] = U[k+1:, k+1:] - L[k+1:, k, np.newaxis] * U[k, k+1:]
     return P.transpose(), Q.transpose(), L, np.triu(U)
