@@ -1,138 +1,81 @@
-# coding=utf-8
-import numpy as np
+from numpy import array, argmax, dot, identity, newaxis, abs, empty, unravel_index;
 
 
-def lu_inplace(A):
-    m, n = A.shape
-    A = A.astype(np.float64)
-    for k in range(m-1):
-        A[k+1:, k] = (1.0 / A[k, k]) * A[k+1:, k]  # division med 0 er muligt
-        A[k+1:, k+1:] = A[k+1:, k+1:] - A[k+1:, k, np.newaxis] * A[k, k+1:]
-    L = np.tril(A)
-    np.fill_diagonal(L, 1)
-    return L, np.triu(A)
-
-
-def lu_out_of_place(A):
-    m, n = A.shape
-    A = A.astype(np.float64)
-    U = np.zeros((m, m))
-    L = np.identity(m)
-    for k in range(m):
-        U[k, k:] = A[k, k:]
-        L[k+1:, k] = (1.0 / A[k, k]) * A[k+1:, k]  # division med 0 er muligt
-        A[k+1:, k+1:] = A[k+1:, k+1:] - L[k+1:, k, np.newaxis] * U[k, k+1:]
-    return L, U
-
-
-def _find_pivot(A, pivoting):
-    A = np.abs(A)
-
+def find_pivot(U, k, pivoting):
     # partial pivoting
     if pivoting == 0:
-        return A.argmax()
+        return argmax(abs(U[k+1:, k])) + k+1, k
 
     # complete pivoting
     if pivoting == 1:
-        return np.unravel_index(np.argmax(A), A.shape)
+        Ucorner = U[k+1:, k+1:]
+        return array(unravel_index(argmax(abs(Ucorner)), Ucorner.shape)) + (k+1, k+1)
 
     # rook pivoting
     if pivoting == 2:
-        rowindex = A[:, 0].argmax()
-        colmax = A[rowindex, 0]
+        rowindex = argmax(abs(U[k+1:, k]))+k+1
+        colmax = abs(U[rowindex][k])
         rowmax = -1
         while rowmax < colmax:
-            colindex = A[rowindex].argmax()
-            rowmax = A[rowindex][colindex]
+            colindex = argmax(abs(U[rowindex, k+1:]))+ k+1
+            rowmax = abs(U[rowindex][colindex])
             if colmax < rowmax:
-                rowindex = A[:, colindex].argmax()
-                colmax = A[rowindex][colindex]
+                rowindex = argmax(abs(U[k+1:, colindex]))+ k+1
+                colmax = abs(U[rowindex][colindex])
             else:
                 break
         return rowindex, colindex
 
 
-def _swap_row(A, m, k, pivot):
-    temp = np.empty(m)
-    temp[:] = A[k, :]
-    A[k, :] = A[pivot, :]
-    A[pivot, :] = temp[:]
+# Permutation til LU-faktoriseringsskridt
+def permute_PLUQ((i, j), P, L, U, Q, k):
+    # Permuter raekker
+    if i != k:
+        U[[i, k], k:] = U[[k, i], k:]
+        L[[i, k], :k] = L[[k, i], :k]
+        P[i], P[k] = P[k], P[i]
+
+    # Permuter soejler
+    if j != k:
+        U[:, [j, k]] = U[:, [k, j]]
+        Q[i], Q[k] = Q[k], Q[i]
 
 
-def _swap_row_to_k(A, m, k, pivot):
-    temp = np.empty(m)
-    temp[:k] = A[k, :k]
-    A[k, :k] = A[pivot, :k]
-    A[pivot, :k] = temp[:k]
+# Find (P,L,U,Q) saa P,Q er permutationer (i -> P[i], j -> Q[j]), L nedre-triangulaer med 1-diagonal,
+# og U er oevre-triangulaer. 
+def lu_decompose(A, pivot_scheme=0):
+    n = len(A)
+    L = identity(n)
+    U = A.astype(float)
+    P, Q = range(n), range(n)
+
+    for k in range(n-1):
+        i, j = find_pivot(U, k, pivot_scheme)
+        permute_PLUQ((i, j), P, L, U, Q, k)
+        pivot = U[k, k]
+        if pivot == 0:          # A has rank < n
+            return P, L, U, Q, k
+
+        L[k+1:, k] = (1/pivot) * U[k+1:, k]
+        U[k+1:, k+1:] -= (1/pivot) * U[k+1:, k, newaxis] * U[k, k+1:]
+        U[k+1:, k] = 0
+
+    return P, L, U, Q, n
 
 
-def _swap_col(A, m, k, pivot):
-    temp = np.empty(m)
-    temp[:] = A[:, k]
-    A[:, k] = A[:, pivot]
-    A[:, pivot] = temp[:]
+"""
+# Givet permutation i -> P[i], permuter raekker
+def permute_rows(P,A):
+    PA = empty(A.shape);
+    for i in range(len(P)):
+        PA[P[i], :] = A[i,:];
+    return PA;
 
+# Givet permutation j -> Q[j], permuter soejler
+def permute_cols(Q,A):
+    AQ = empty(A.shape);
+    for j in range(len(Q)):
+        AQ[:,Q[j]] = A[:,j];
+    return AQ;
 
-def _permute(P, L, U, m, k, pivot, pivoting):  # permute skal nok regne m ud via shape
-    # One dimensional pivoting
-    if pivoting == 0:
-        if k != pivot:
-            _swap_row(P, m, k, pivot)
-            _swap_row(U, m, k, pivot)
-            _swap_row_to_k(L, m, k, pivot)
-
-    # Two dimensional pivoting
-    if pivoting == 1:
-        P, Q = P
-        x, y = pivot
-        if k != x:
-            _swap_row(U, m, k, x)
-            _swap_row(P, m, k, x)
-            _swap_row_to_k(L, m, k, x)
-        if k != y:
-            _swap_col(U, m, k, y)
-            _swap_col(Q, m, k, y)
-
-
-def lu_partial_pivot(A):
-    m, n = A.shape
-    U = A.astype(np.float64)
-    P = np.identity(m)
-    L = np.identity(m)
-    for k in range(m):
-        pivot = k + _find_pivot(U[k:, k], 0)
-        _permute(P, L, U, m, k, pivot, 0)
-        L[k+1:, k] = (1.0 / U[k, k]) * U[k+1:, k]
-        U[k+1:, k+1:] = U[k+1:, k+1:] - L[k+1:, k, np.newaxis] * U[k, k+1:]
-    return P.transpose(), L, np.triu(U)
-
-
-def lu_complete_pivot(A):
-    m, n = A.shape
-    U = A.astype(np.float64)
-    P = np.identity(m)
-    Q = np.identity(m)
-    L = np.identity(m)
-    for k in range(m):
-        i, j = _find_pivot(U[k:, k:], 1)
-        i, j = i + k, j + k
-        _permute((P, Q), L, U, m, k, (i, j), 1)
-        L[k+1:, k] = (1.0 / U[k, k]) * U[k+1:, k]
-        U[k+1:, k+1:] = U[k+1:, k+1:] - L[k+1:, k, np.newaxis] * U[k, k+1:]
-    return P.transpose(), Q.transpose(), L, np.triu(U)
-
-
-def lu_rook_pivot(A):
-    m, n = A.shape
-    U = A.astype(np.float64)
-    P = np.identity(m)
-    Q = np.identity(m)
-    L = np.identity(m)
-    for k in range(m):
-        i, j = _find_pivot(U[k:, k:], 2)
-        i, j = i + k, j + k
-        _permute((P, Q), L, U, m, k, (i, j), 1)
-        L[k+1:, k] = (1.0 / U[k, k]) * U[k+1:, k]
-        U[k+1:, k+1:] = U[k+1:, k+1:] - L[k+1:, k, np.newaxis] * U[k, k+1:]
-    return P.transpose(), Q.transpose(), L, np.triu(U)
-
+"""

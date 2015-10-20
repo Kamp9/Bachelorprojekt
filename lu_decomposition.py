@@ -99,11 +99,11 @@ def lu_partial_pivot(A):
     U = A.astype(np.float64)
     P = np.identity(m)
     L = np.identity(m)
-    for k in range(m):
+    for k in range(m - 1):
         pivot = k + _find_pivot(U[k:, k], 0)
         _permute(P, L, U, m, k, pivot, 0)
         L[k+1:, k] = (1.0 / U[k, k]) * U[k+1:, k]
-        U[k+1:, k+1:] = U[k+1:, k+1:] - L[k+1:, k, np.newaxis] * U[k, k+1:]
+        U[k+1:, k+1:] -= L[k+1:, k, np.newaxis] * U[k, k+1:]
     return P.transpose(), L, np.triu(U)
 
 
@@ -113,12 +113,12 @@ def lu_complete_pivot(A):
     P = np.identity(m)
     Q = np.identity(m)
     L = np.identity(m)
-    for k in range(m):
+    for k in range(m - 1):
         x, y = _find_pivot(U[k:, k:], 1)
         x, y = x + k, y + k
         _permute((P, Q), L, U, m, k, (x, y), 1)
         L[k+1:, k] = (1.0 / U[k, k]) * U[k+1:, k]
-        U[k+1:, k+1:] = U[k+1:, k+1:] - L[k+1:, k, np.newaxis] * U[k, k+1:]
+        U[k+1:, k+1:] -= L[k+1:, k, np.newaxis] * U[k, k+1:]
     return P.transpose(), Q.transpose(), L, np.triu(U)
 
 
@@ -128,11 +128,11 @@ def lu_rook_pivot(A):
     P = np.identity(m)
     Q = np.identity(m)
     L = np.identity(m)
-    for k in range(m):
+    for k in range(m - 1):
         x, y = _find_pivot(U[k:, k:], 2)
         x, y = x + k, y + k
         _permute((P, Q), L, U, m, k, (x, y), 1)
         L[k+1:, k] = (1.0 / U[k, k]) * U[k+1:, k]
-        U[k+1:, k+1:] = U[k+1:, k+1:] - L[k+1:, k, np.newaxis] * U[k, k+1:]
+        U[k+1:, k+1:] -= L[k+1:, k, np.newaxis] * U[k, k+1:]
     return P.transpose(), Q.transpose(), L, np.triu(U)
 

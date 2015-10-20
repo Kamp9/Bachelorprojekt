@@ -1,16 +1,10 @@
-import cProfile
 import numpy as np
 import scipy.linalg as sp
 import cholesky_decomposition
 import lu_decomposition
 import lu_decomposition2
 import solve
-import real_test
 from numpy.testing import TestCase, assert_array_almost_equal
-
-"""
-profiling
-"""
 
 real_matrix = np.array([[3.3821, 0.8784, 0.3613, -2.0349],
                         [0.8784, 2.0068, 0.5587, 32.1169],
@@ -60,9 +54,14 @@ b = np.array([4133, 6421, -533, -5533])
 
 P, Q, L, U = lu_decomposition.lu_rook_pivot(rooktest)
 
-# cProfile.run('sp.solve(rand_matrix2, rand_col)')
-# cProfile.run('solve.solve(rand_matrix2, rand_col, 1)')
+P2, L2, U2, Q2, n = lu_decomposition2.lu_decompose(rooktest, 0)
 
-P2, Q2, L2, U2 = lu_decomposition2.lu_complete_pivot(rooktest)
 
-print np.dot(L2, U2)
+print P2
+print Q2
+print L2
+print U2
+print n
+
+print P2, np.dot(L2, U2)
+
