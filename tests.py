@@ -48,8 +48,14 @@ rooktest = np.array([[155, 53113531513, 642, 531],
                      [-90053, 53536464, 513, 35],
                      [-53353, 53, 1000, -353]])
 
+posdef_matrix = np.array([[2, -1, 0],
+                          [-1, 2, -1],
+                          [0, -1, 2]])
+
+b3 = np.array([41, 31, 64])
+
 a = np.array([[5315353, -5313451, 65153511], [-1355351, -35315, 35362], [0.00005353135, -5, 13646]])
-b = np.array([4133, 6421, -533, -5533])
+b4 = np.array([4133, 6421, -533, -5533])
 
 
 P, Q, L, U = lu_decomposition.lu_rook_pivot(rooktest)
@@ -64,4 +70,7 @@ print U2
 print n
 
 print P2, np.dot(L2, U2)
+
+print solve.solve_cholesky(posdef_matrix, b3)
+print sp.solve(posdef_matrix, b3)
 

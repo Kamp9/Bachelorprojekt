@@ -1,6 +1,5 @@
 # coding=utf-8
 import numpy as np
-import solve
 
 
 def is_pos_def(A):
@@ -23,18 +22,3 @@ def cholesky(A):
         return L
     else:
         raise ValueError('Matrix is not positive definite')
-
-
-def solve(A, b):
-    """
-    solve(A, b) is only working on positive definite matrix A
-    :param A:
-    :param b:
-    :return:
-    """
-    L = cholesky(A)
-    U = L.transpose()
-    z = solve.forward_substitution(L, b)
-    x = solve.backward_substitution(U, z)
-    return x
-
