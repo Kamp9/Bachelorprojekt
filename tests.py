@@ -5,6 +5,8 @@ import lu_decomposition
 import lu_decomposition2
 import solve
 from numpy.testing import TestCase, assert_array_almost_equal
+from decimal import Decimal
+
 
 real_matrix = np.array([[3.3821, 0.8784, 0.3613, -2.0349],
                         [0.8784, 2.0068, 0.5587, 32.1169],
@@ -73,4 +75,19 @@ print P2, np.dot(L2, U2)
 
 print solve.solve_cholesky(posdef_matrix, b3)
 print sp.solve(posdef_matrix, b3)
+
+print sp.lu(rooktest)[0]
+print lu_decomposition.lu_partial_pivot(rooktest)[0]
+
+rand_int_matrix = np.random.randint(-1000, 1000, size=(10, 10))
+rand_int_col = np.random.randint(-1000, 1000, size=(10, 1))
+sp_solve2 = sp.solve(rand_int_matrix, rand_int_col)
+
+print sp_solve2
+
+print solve.solve(rand_int_matrix, rand_int_col, 1)
+
+print Decimal(sp_solve2[0][0])
+print Decimal(solve.solve(rand_int_matrix, rand_int_col, 1)[0][0])
+
 
