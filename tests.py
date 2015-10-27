@@ -4,6 +4,7 @@ import cholesky_decomposition
 import lu_decomposition
 import lu_decomposition2
 import solve
+import naive_stolen_from_web
 from numpy.testing import TestCase, assert_array_almost_equal
 from decimal import Decimal
 
@@ -64,7 +65,7 @@ P, Q, L, U = lu_decomposition.lu_rook_pivot(rooktest)
 
 P2, L2, U2, Q2, n = lu_decomposition2.lu_decompose(rooktest, 0)
 
-
+"""
 print P2
 print Q2
 print L2
@@ -83,5 +84,19 @@ rand_int_col = np.random.randint(-1000, 1000, size=(10, 1))
 print solve.solve(rand_int_matrix, rand_int_col, 1)
 
 print Decimal(solve.solve(rand_int_matrix, rand_int_col, 1)[0][0])
+
+
+print Decimal(0.1)
+"""
+
+lala = np.array(([1, 0, 0],
+                 [42, 2, 0],
+                 [-1, 31, 13]))
+
+lala_invers = np.array(([-1, 0, 0],
+                 [-42, 2, 0],
+                 [1, -31, -13]))
+
+print np.dot(lala, lala_invers)
 
 
