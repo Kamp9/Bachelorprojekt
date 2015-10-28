@@ -106,3 +106,6 @@ print solve.inverse(rooktest)
 print np.dot(solve.inverse(rooktest), rooktest)
 print np.dot(sp.inv(rooktest), rooktest)
 
+print sp.solve(rooktest, rooktest)
+
+print lu_decomposition.lu_partial_pivot(rooktest)[2]
