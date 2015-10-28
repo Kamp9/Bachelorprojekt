@@ -1,5 +1,5 @@
 import numpy as np
-#import scipy.linalg as sp
+import scipy.linalg as sp
 import cholesky_decomposition
 import lu_decomposition
 import lu_decomposition2
@@ -46,9 +46,9 @@ lalala = np.array([[1, 2, 3],
                    [4, 5, 6],
                    [7, 8, 9]])
 
-rooktest = np.array([[155, 53113531513, 642, 531],
+rooktest = np.array([[155, 53113, 642, 531],
                      [-4, 553, 700, 1],
-                     [-90053, 53536464, 513, 35],
+                     [-90053, 53534, 513, 35],
                      [-53353, 53, 1000, -353]])
 
 posdef_matrix = np.array([[2, -1, 0],
@@ -89,14 +89,20 @@ print Decimal(solve.solve(rand_int_matrix, rand_int_col, 1)[0][0])
 print Decimal(0.1)
 """
 
-lala = np.array(([1, 0, 0],
-                 [42, 2, 0],
-                 [-1, 31, 13]))
+lala = np.array(([3, 8, 9],
+                 [4, 5, 6],
+                 [2, 5, 3]))
+
+lal = np.array(([[100]]))
 
 lala_invers = np.array(([-1, 0, 0],
-                 [-42, 2, 0],
-                 [1, -31, -13]))
+                        [-42, 2, 0],
+                        [1, -31, -13]))
 
-print np.dot(lala, lala_invers)
+lal2 = np.array(([100, 42],
+                 [42, 143]))
 
+print solve.inverse(rooktest)
+print np.dot(solve.inverse(rooktest), rooktest)
+print np.dot(sp.inv(rooktest), rooktest)
 

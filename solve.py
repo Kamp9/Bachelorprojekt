@@ -13,6 +13,12 @@ def _forward_substitution(L, b):
 
 
 def _back_substitution(U, z):
+    """
+    Burde laves uden l-k men bare med omvendt range(m)
+    :param U:
+    :param z:
+    :return:
+    """
     (m, n) = U.shape
     l = m - 1
     x = np.zeros(m)
@@ -66,3 +72,16 @@ def solve(A, b, pivoting):
         z = _forward_substitution(L, np.dot(P.transpose(), b))
         x = np.dot(Q.transpose(), _back_substitution(U, z))
         return x
+
+
+def inverse(A):
+    (m, n) = A.shape
+    L, U = lu_decomposition.lu_inplace(A)
+    A_inverse = np.zeros((m, m))
+    b = np.identity(m)
+    for k in range(m):
+        z = _forward_substitution(L, b[:, k])
+        x = _back_substitution(U, z)
+        A_inverse[:, k, np.newaxis] = x
+    return A_inverse
+
