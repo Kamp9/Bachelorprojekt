@@ -1,25 +1,25 @@
 # coding=utf-8
 import numpy as np
-import lu_decomposition
-import cholesky_decomposition
+import lu
+import cholesky
 
 
-def _forward_substitution(L, b):
-    (m, n) = L.shape
+def forward_substitution(L, b):
+    m, n = L.shape
     z = np.zeros(m)
     for k in range(m):
-        z[k] = (1.0 / L[k, k]) * (b[k] - np.dot(L[k, :k], z[:k]))
+        z[k] = b[k] - np.dot(L[k, :k], z[:k])
     return z[:, np.newaxis]
 
 
-def _back_substitution(U, z):
+def back_substitution(U, z):
     """
     Burde laves uden l-k men bare med omvendt range(m)
     :param U:
     :param z:
     :return:
     """
-    (m, n) = U.shape
+    m, n = U.shape
     l = m - 1
     x = np.zeros(m)
     for k in range(m):
@@ -35,10 +35,10 @@ def solve_cholesky(A, b):
     :param b:
     :return:
     """
-    L = cholesky_decomposition.cholesky(A)
+    L = cholesky.cholesky(A)
     U = L.transpose()
-    z = _forward_substitution(L, b)
-    x = _back_substitution(U, z)
+    z = forward_substitution(L, b)
+    x = back_substitution(U, z)
     return x
 
 
@@ -47,41 +47,41 @@ def solve(A, b, pivoting):
     # TODO skal have styr på .transpose() i denne og i lu_decomposition
     # No pivoting
     if pivoting == 0:
-        L, U = lu_decomposition.lu_out_of_place(A)
-        z = _forward_substitution(L, b)
-        x = _back_substitution(U, z)
+        L, U = lu.lu_out_of_place(A)
+        z = forward_substitution(L, b)
+        x = back_substitution(U, z)
         return x
 
     # Partial pivoting
     if pivoting == 1:
-        P, L, U = lu_decomposition.lu_partial_pivot(A)
-        z = _forward_substitution(L, np.dot(P.transpose(), b))
-        x = _back_substitution(U, z)
+        P, L, U = lu.lu_partial_pivot(A)
+        z = forward_substitution(L, np.dot(P.transpose(), b))
+        x = back_substitution(U, z)
         return x
 
     # Complete pivoting
     if pivoting == 2:
-        P, Q, L, U = lu_decomposition.lu_complete_pivot(A)
-        z = _forward_substitution(L, np.dot(P.transpose(), b))
-        x = np.dot(Q.transpose(), _back_substitution(U, z))
+        P, Q, L, U = lu.lu_complete_pivot(A)
+        z = forward_substitution(L, np.dot(P.transpose(), b))
+        x = np.dot(Q.transpose(), back_substitution(U, z))
         return x
 
     # Rook pivoting
     if pivoting == 3:
-        P, Q, L, U = lu_decomposition.lu_rook_pivot(A)
-        z = _forward_substitution(L, np.dot(P.transpose(), b))
-        x = np.dot(Q.transpose(), _back_substitution(U, z))
+        P, Q, L, U = lu.lu_rook_pivot(A)
+        z = forward_substitution(L, np.dot(P.transpose(), b))
+        x = np.dot(Q.transpose(), back_substitution(U, z))
         return x
 
 
 def inverse(A):
     (m, n) = A.shape
-    L, U = lu_decomposition.lu_inplace(A)
+    L, U = lu.lu_inplace(A)
     A_inverse = np.zeros((m, m))
     b = np.identity(m)
     for k in range(m):
-        z = _forward_substitution(L, b[:, k])
-        x = _back_substitution(U, z)
+        z = forward_substitution(L, b[:, k])
+        x = back_substitution(U, z)
         A_inverse[:, k, np.newaxis] = x
     return A_inverse
 

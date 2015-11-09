@@ -1,13 +1,27 @@
 from numpy.testing import TestCase, assert_array_almost_equal
 import numpy as np
 import scipy.linalg as sp
-import cholesky_decomposition
-import lu_decomposition
+import cholesky
+import lu
 import solve
 import unittest
 
 
 class TestLinAlg(unittest.TestCase):
+    def test_cholesky(self):
+        a = np.random.random_integers(-1000, 1000, size=(1000, 1000))
+        b = np.random.random_integers(1000000, 100000000, size=(1000, 1))
+        a_sym = (a + a.T)/2
+        np.fill_diagonal(a_sym, b)
+        assert_array_almost_equal(sp.cholesky(a_sym), cholesky.cholesky(a_sym), decimal=10)
+
+    def test_cholesky_block(self):
+        a = np.random.random_integers(-1000, 1000, size=(1000, 1000))
+        b = np.random.random_integers(1000000, 100000000, size=(1000, 1))
+        a_sym = (a + a.T)/2
+        np.fill_diagonal(a_sym, b)
+        assert_array_almost_equal(sp.cholesky(a_sym), cholesky.cholesky_block(a_sym, 100), decimal=10)
+
     def test_lu_for_floats(self):
         rand_matrix = np.random.rand(1000, 1000)
         rand_col = np.random.rand(1000, 1)
