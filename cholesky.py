@@ -42,8 +42,8 @@ def cholesky(A):
 def forward_substitution(U, B):
     m, n = U.shape
     r, n = B.shape
-    U = U.astype(np.float64)
-    B = B.astype(np.float64)
+   # U = U.astype(np.float64)
+   # B = B.astype(np.float64)
     x = np.zeros((r, n))
     for k in range(m):
         x[k] = (B[k] - np.dot(U[k, :k], x[:k])) / U[k, k]

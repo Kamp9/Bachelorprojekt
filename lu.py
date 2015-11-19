@@ -136,3 +136,25 @@ def lu_rook_pivot(A):
         U[k+1:, k+1:] -= L[k+1:, k, np.newaxis] * U[k, k+1:]
     return P.transpose(), Q.transpose(), L, np.triu(U)
 
+
+def forward_substitution(U, B):
+    m, n = U.shape
+    r, n = B.shape
+    U = U.astype(np.float64)
+    B = B.astype(np.float64)
+    x = np.zeros((r, n))
+    for k in range(m):
+        x[k] = (B[k] - np.dot(U[k, :k], x[:k])) / U[k, k]
+    return x
+
+
+def back_substitution(L, B):
+    m, n = L.shape
+    r, n = B.shape
+    L = L.astype(np.float64)
+    B = B.astype(np.float64)
+    x = np.zeros((r, n))
+    for k in range(m):
+        x[k] = (B[k] - np.dot(L[k, :k], x[:k])) / L[k, k]
+    return x
+
