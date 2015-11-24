@@ -148,13 +148,29 @@ def forward_substitution(U, B):
     return x
 
 
-def back_substitution(L, B):
-    m, n = L.shape
-    r, n = B.shape
-    L = L.astype(np.float64)
+def back_substitution(U, B):
+    m, n = U.shape
+    n, r = B.shape
+    U = U.astype(np.float64)
     B = B.astype(np.float64)
-    x = np.zeros((r, n))
+    x = np.zeros((n, r))
     for k in range(m):
-        x[k] = (B[k] - np.dot(L[k, :k], x[:k])) / L[k, k]
+        x[:, k] = (B[:, k] - np.dot(x[:, :k], U[:k, k])) / U[k, k]
     return x
 
+
+def lu_block(A, r):
+    m, n = A.shape
+    U = np.zeros((m, m))
+    L = np.zeros((m, m))
+    A = A.astype(np.float64)
+    for k in range(0, m, r):
+        decomp = lu_inplace(A[k:k+r, k:k+r])
+        L[k:k+r, k:k+r] = decomp[0]
+        U[k:k+r, k:k+r] = decomp[1]
+        L[k:k+r, k+r:] = forward_substitution(L[k:k+r, k:k+r], A[k:k+r, k+r:])
+        U[k+r:, k:k+r] = back_substitution(U[k:k+r, k:k+r], A[k+r:, k:k+r])
+        A[k+r:, k+r:] -= np.dot(U[k+r:, k:k+r], L[k:k+r, k+r:])
+    return L, U
+
+rand_int_matrix = np.random.randint(-1000, 1000, size=(10, 10))

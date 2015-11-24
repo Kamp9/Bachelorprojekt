@@ -146,8 +146,8 @@ lal2 = np.array([[-115, 42, 315],
 def forward_substitution(U, B):
     m, n = U.shape
     r, n = B.shape
-   # U = U.astype(np.float64)
-   # B = B.astype(np.float64)
+    U = U.astype(np.float64)
+    B = B.astype(np.float64)
     x = np.zeros((r, n))
     for k in range(m):
         x[k] = (B[k] - np.dot(U[k, :k], x[:k])) / U[k, k]
@@ -161,23 +161,24 @@ def back_substitution(U, B):
     B = B.astype(np.float64)
     x = np.zeros((n, r))
     for k in range(m):
-        x[:, k] = (B[:, k] - np.dot(x[:, :k], U[:k, k]) / U[k, k])
+        x[:, k] = (B[:, k] - np.dot(x[:, :k], U[:k, k])) / U[k, k]
     return x
 
 
-print back_substitution(lu.lu_inplace(a_sym[:3, :3])[0], a_sym[3:, :3])
+def lu_block(A, r):
+    m, n = A.shape
+    U = np.zeros((m, m))
+    L = np.zeros((m, m))
+    A = A.astype(np.float64)
+    for k in range(0, m, r):
+        decomp = lu.lu_inplace(A[k:k+r, k:k+r])
+        L[k:k+r, k:k+r] = decomp[0]
+        U[k:k+r, k:k+r] = decomp[1]
+        L[k:k+r, k+r:] = forward_substitution(L[k:k+r, k:k+r], A[k:k+r, k+r:])
+        U[k+r:, k:k+r] = back_substitution(U[k:k+r, k:k+r], A[k+r:, k:k+r])
+        A[k+r:, k+r:] -= np.dot(U[k+r:, k:k+r], L[k:k+r, k+r:])
+    return L, U
 
-print lu.lu_inplace(a_sym)[0]
-
-print int("4314 3eagadg dsgafet")
-"""
-[[ -74.   27. -250.]
- [ 396.  521. -116.]
- [ 870.   54.  286.]]
-[[  1.00000000e+00  -0.00000000e+00  -0.00000000e+00  -0.00000000e+00  0.00000000e+00   0.00000000e+00]
- [ -5.29524969e-04   1.00000000e+00  -0.00000000e+00   0.00000000e+00  0.00000000e+00   0.00000000e+00]
- [ -4.34684676e-04  -2.90557492e-04   1.00000000e+00  -0.00000000e+00 -0.00000000e+00   0.00000000e+00]
- [ -1.46212118e-04   1.32512368e-04  -2.77000010e-04   1.00000000e+00 -0.00000000e+00  -0.00000000e+00]
- [  7.82432416e-04   2.56174490e-03  -1.28157008e-04  -2.08751627e-04  1.00000000e+00   0.00000000e+00]
- [  1.71898031e-03   2.67674198e-04   3.17293680e-04  -4.76908390e-04  5.71533853e-04   1.00000000e+00]]
-"""
+rand_int_matrix = np.random.randint(-1000, 1000, size=(10, 10))
+print back_substitution(lu.lu_inplace(rand_int_matrix[:2, :2])[1], rand_int_matrix[2:, :2])
+print lu.lu_inplace(rand_int_matrix)[0]
