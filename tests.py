@@ -143,7 +143,7 @@ lal2 = np.array([[-115, 42, 315],
 # print cholesky.cholesky(a_sym)
 
 
-def forward_substitution(U, B):
+def row_substitution(U, B):
     m, n = U.shape
     r, n = B.shape
     U = U.astype(np.float64)
@@ -154,7 +154,7 @@ def forward_substitution(U, B):
     return x
 
 
-def back_substitution(U, B):
+def col_substitution(U, B):
     m, n = U.shape
     n, r = B.shape
     U = U.astype(np.float64)
@@ -174,11 +174,7 @@ def lu_block(A, r):
         decomp = lu.lu_inplace(A[k:k+r, k:k+r])
         L[k:k+r, k:k+r] = decomp[0]
         U[k:k+r, k:k+r] = decomp[1]
-        L[k:k+r, k+r:] = forward_substitution(L[k:k+r, k:k+r], A[k:k+r, k+r:])
-        U[k+r:, k:k+r] = back_substitution(U[k:k+r, k:k+r], A[k+r:, k:k+r])
-        A[k+r:, k+r:] -= np.dot(U[k+r:, k:k+r], L[k:k+r, k+r:])
+        L[k+r:, k:k+r] = col_substitution(U[k:k+r, k:k+r], A[k+r:, k:k+r])
+        U[k:k+r, k+r:] = row_substitution(L[k:k+r, k:k+r], A[k:k+r, k+r:])
+        A[k+r:, k+r:] -= np.dot(L[k+r:, k:k+r], U[k:k+r, k+r:])
     return L, U
-
-rand_int_matrix = np.random.randint(-1000, 1000, size=(10, 10))
-print back_substitution(lu.lu_inplace(rand_int_matrix[:2, :2])[1], rand_int_matrix[2:, :2])
-print lu.lu_inplace(rand_int_matrix)[0]

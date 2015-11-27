@@ -40,11 +40,11 @@ class TestLinAlg(unittest.TestCase):
         assert_array_almost_equal(sp_solve2, solve.solve(rand_int_matrix, rand_int_col, 1), decimal=9)
         assert_array_almost_equal(sp_solve2, solve.solve(rand_int_matrix, rand_int_col, 2), decimal=9)
         assert_array_almost_equal(sp_solve2, solve.solve(rand_int_matrix, rand_int_col, 3), decimal=9)
-"""
+
     def test_lu_block(self):
         rand_int_matrix = np.random.randint(-1000, 1000, size=(1000, 1000))
-        assert_array_almost_equal(lu.lu_inplace(rand_int_matrix)[0], lu.lu_block(rand_int_matrix, 10)[0], decimal=9)
-"""
+        assert_array_almost_equal(lu.lu_inplace(rand_int_matrix)[0], lu.lu_block(rand_int_matrix, 10)[0], decimal=2)
+
     def test_inverse(self):
         rand_int_matrix = np.random.randint(-1000, 1000, size=(100, 100))
         assert_array_almost_equal(sp.inv(rand_int_matrix), solve.inverse(rand_int_matrix), decimal=12)
