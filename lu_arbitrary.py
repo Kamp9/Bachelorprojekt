@@ -15,6 +15,21 @@ def lu_block(A, r):
         U[k:k+r, k:] = lu_out_of_place(A[k:k+r, k:])[1]
         A[k+r:, k+r:] -= np.dot(L[k+r:, k:k+r], U[k:k+r, k+r:])
     return L, U
+
+def lu_partial_pivot(A):
+    m, n = A.shape
+    L = np.identity(m)
+    U = A.astype(np.float64)
+    P = range(m)
+    Q = range(m)
+    for k in range(m - 1):
+        i = k + find_pivot(U[k:, k], 0)
+        permute(P, L, U, Q, k, (i, k))
+        L[k+1:, k] = (1.0 / U[k, k]) * U[k+1:, k]
+        U[k+1:, k+1:] -= L[k+1:, k, np.newaxis] * U[k, k+1:]
+    return P, L, np.triu(U)
+
+
 """
 
 
@@ -58,23 +73,76 @@ def lu_block(A, r):
     return L, U
 
 
-def lu_partial_pivot(A):
+def find_pivot(A, pivoting):
+    A = np.abs(A)
+
+    # partial pivoting
+    if pivoting == 0:
+        return A.argmax()
+
+    # complete pivoting
+    if pivoting == 1:
+        return np.unravel_index(np.argmax(A), A.shape)
+
+    # rook pivoting
+    if pivoting == 2:
+        rowindex = A[:, 0].argmax()
+        colmax = A[rowindex, 0]
+        rowmax = -1
+        while rowmax < colmax:
+            colindex = A[rowindex].argmax()
+            rowmax = A[rowindex][colindex]
+            if colmax < rowmax:
+                rowindex = A[:, colindex].argmax()
+                colmax = A[rowindex][colindex]
+            else:
+                break
+        return rowindex, colindex
+
+
+def permute(P, L, U, Q, k, (i, j)):
+    # Permuter raekker
+    if i != k:
+        U[[i, k], k:] = U[[k, i], k:]
+        L[[i, k], :k] = L[[k, i], :k]
+        P[i], P[k] = P[k], P[i]
+    # Permuter soejler
+    if j != k:
+        U[:, [j, k]] = U[:, [k, j]]
+        Q[i], Q[k] = Q[k], Q[i]
+
+
+def lu_partial_pivot(A, r):
     m, n = A.shape
-    U = A.astype(np.float64)
-    P = np.identity(m)
+    A = A.astype(np.float64)
     L = np.identity(m)
-    for k in range(m - 1):
-        pivot = k + _find_pivot(U[k:, k], 0)
-        _permute(P, L, U, m, k, pivot, 0)
-        L[k+1:, k] = (1.0 / U[k, k]) * U[k+1:, k]
-        U[k+1:, k+1:] -= L[k+1:, k, np.newaxis] * U[k, k+1:]
-    return P.transpose(), L, np.triu(U)
+    U = np.zeros((m, m))
+    P = range(m)
+    Q = range(m)
+    for k in range(0, m, r):
+        i = k + find_pivot(U[k:, k], 0)
+        permute(P, L, U, Q, k, (i, k))
+        L[k:, k:k+r] = lu_out_of_place(A[k:, k:k+r])[0]
+        U[k:k+r, k:] = lu_out_of_place(A[k:k+r, k:])[1]
+        A[k+r:, k+r:] -= np.dot(L[k+r:, k:k+r], U[k:k+r, k+r:])
+    return P, L, np.triu(U)
+
+rand_int_matrix = np.random.randint(-1000, 1000, size=(4, 4))
+
+print sp.lu(rand_int_matrix)[1]
+print sp.lu(rand_int_matrix)[2]
+print
+print lu_partial_pivot(rand_int_matrix, 2)[1]
+print lu_partial_pivot(rand_int_matrix, 2)[2]
 
 
+"""
 a_sym = tests.generate_pos_dif(4, -1000, 1000)
+
 
 print sp.lu(a_sym)[1]
 print sp.lu(a_sym)[2]
 print
-print lu_block(a_sym, 2)[0]
-print lu_block(a_sym, 2)[1]
+print lu_partial_pivot(a_sym, 2)[1]
+print lu_partial_pivot(a_sym, 2)[2]
+"""
