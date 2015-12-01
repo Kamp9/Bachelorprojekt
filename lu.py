@@ -172,6 +172,3 @@ def lu_block(A, r):
         U[k:k+r, k+r:] = row_substitution(L[k:k+r, k:k+r], A[k:k+r, k+r:])
         A[k+r:, k+r:] -= np.dot(L[k+r:, k:k+r], U[k:k+r, k+r:])
     return L, U
-
-
-rand_int_matrix = np.random.randint(-1000, 1000, size=(10, 10))
