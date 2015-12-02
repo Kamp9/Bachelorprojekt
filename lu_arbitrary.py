@@ -129,12 +129,6 @@ def lu_partial_pivot(A, r):
 
 rand_int_matrix = np.random.randint(-1000, 1000, size=(4, 4))
 
-print sp.lu(rand_int_matrix)[1]
-print sp.lu(rand_int_matrix)[2]
-print
-print lu_partial_pivot(rand_int_matrix, 2)[1]
-print lu_partial_pivot(rand_int_matrix, 2)[2]
-
 
 """
 a_sym = tests.generate_pos_dif(4, -1000, 1000)
