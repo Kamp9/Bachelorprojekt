@@ -29,7 +29,18 @@ def lu_partial_pivot(A):
         U[k+1:, k+1:] -= L[k+1:, k, np.newaxis] * U[k, k+1:]
     return P, L, np.triu(U)
 
-
+def lu_partial_block(A, r):
+    m, n = A.shape
+    A = A.astype(np.float64)
+    L = np.identity(m)
+    U = np.zeros((m, m))
+    P = range(m)
+    Q = range(m)
+    for k in range(0, m, r):
+        L[k:, k:k+r] = lu_out_of_place(A[k:, k:k+r])[0]
+        U[k:k+r, k:] = lu_out_of_place(A[k:k+r, k:])[1]
+        A[k+r:, k+r:] -= np.dot(L[k+r:, k:k+r], U[k:k+r, k+r:])
+    return P, L, np.triu(U)
 """
 
 
@@ -49,14 +60,14 @@ def lu_out_of_place(A):
     return L, U
 
 
-def row_substitution(U, B):
-    m, n = U.shape
+def row_substitution(L, B):
+    m, n = L.shape
     r, n = B.shape
-    U = U.astype(np.float64)
+    L = L.astype(np.float64)
     B = B.astype(np.float64)
     x = np.zeros((r, n))
     for k in range(m):
-        x[k] = (B[k] - np.dot(U[k, :k], x[:k])) / U[k, k]
+        x[k] = (B[k] - np.dot(L[k, :k], x[:k])) / L[k, k]
     return x
 
 
@@ -67,8 +78,7 @@ def lu_block(A, r):
     A = A.astype(np.float64)
     for k in range(0, m, r):
         L[k:, k:k+r] = lu_out_of_place(A[k:, k:k+r])[0]
-        U[k:k+r, k:k+r] = lu_out_of_place(A[k:k+r, k:k+r])[1]
-        U[k:k+r, k+r:] = row_substitution(L[k:k+r, k:k+r], A[k:k+r, k+r:])
+        U[k:k+r, k:] = lu_out_of_place(A[k:k+r, k:])[1]
         A[k+r:, k+r:] -= np.dot(L[k+r:, k:k+r], U[k:k+r, k+r:])
     return L, U
 
@@ -112,7 +122,34 @@ def permute(P, L, U, Q, k, (i, j)):
         Q[i], Q[k] = Q[k], Q[i]
 
 
-def lu_partial_pivot(A, r):
+def permute_partial(P, L, U, k, i):
+    # Permuter raekker
+    if i != k:
+        P[i], P[k] = P[k], P[i]
+        L[[i, k], :k] = L[[k, i], :k]
+        U[[i, k], k:] = U[[k, i], k:]
+
+
+def lu_partial(A):
+    A = A.astype(np.float64)
+    m, n = A.shape
+    P = range(m)
+    if m > n:
+        L = np.eye(m, n)
+        U = np.zeros((n, n))
+    else:
+        L = np.eye(m, m)
+        U = np.zeros((m, n))
+    for k in range(min(m, n)):
+        i = k + find_pivot(A[k:, k], 0)  # måske lidt underligt at slice inden pivot findes.
+        permute_partial(P, L, A, k, i)
+        U[k, k:] = A[k, k:]
+        L[k+1:, k] = A[k+1:, k] / U[k, k]
+        A[k+1:, k+1:] -= L[k+1:, k, np.newaxis] * U[k, k+1:]
+    return P, L, U
+
+
+def lu_partial_block(A, r):
     m, n = A.shape
     A = A.astype(np.float64)
     L = np.identity(m)
@@ -120,23 +157,21 @@ def lu_partial_pivot(A, r):
     P = range(m)
     Q = range(m)
     for k in range(0, m, r):
-        i = k + find_pivot(U[k:, k], 0)
-        permute(P, L, U, Q, k, (i, k))
-        L[k:, k:k+r] = lu_out_of_place(A[k:, k:k+r])[0]
-        U[k:k+r, k:] = lu_out_of_place(A[k:k+r, k:])[1]
+        PLU = lu_partial(A[k:, k:k+r])
+        L[k:, k:k+r] = PLU[1]
+        U[k:k+r, k:k+r] = PLU[2]
+        U[k:k+r, k+r:] = row_substitution(L[k:k+r, k:k+r], A[k:k+r, k+r:])
         A[k+r:, k+r:] -= np.dot(L[k+r:, k:k+r], U[k:k+r, k+r:])
-    return P, L, np.triu(U)
+    return P, L, U
+
 
 rand_int_matrix = np.random.randint(-1000, 1000, size=(4, 4))
-
-
-"""
 a_sym = tests.generate_pos_dif(4, -1000, 1000)
 
+print rand_int_matrix
 
-print sp.lu(a_sym)[1]
-print sp.lu(a_sym)[2]
-print
-print lu_partial_pivot(a_sym, 2)[1]
-print lu_partial_pivot(a_sym, 2)[2]
-"""
+print lu_partial_block(rand_int_matrix, 2)[1]
+print lu_partial_block(rand_int_matrix, 2)[2]
+
+print sp.lu(rand_int_matrix)[1]
+print sp.lu(rand_int_matrix)[2]

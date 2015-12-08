@@ -10,6 +10,10 @@ import lu_arbitrary
 
 
 class TestLinAlg(unittest.TestCase):
+    def test_lu_arbitrary(self):
+        a_sym = tests.generate_pos_dif(1000, -1000, 1000)
+        assert_array_almost_equal(lu_arbitrary.lu_block(a_sym, 42)[0], sp.lu(a_sym)[1], decimal=12)
+        assert_array_almost_equal(lu_arbitrary.lu_block(a_sym, 42)[1], sp.lu(a_sym)[2], decimal=8)
 """
     def test_cholesky(self):
         a = np.random.random_integers(-1000, 1000, size=(1000, 1000))
@@ -54,9 +58,6 @@ class TestLinAlg(unittest.TestCase):
         assert_array_almost_equal(lu_arbitrary.lu_partial_pivot(rand_int_matrix, 42)[1], sp.lu(rand_int_matrix)[1], decimal=8)
         assert_array_almost_equal(lu_arbitrary.lu_partial_pivot(rand_int_matrix, 42)[2], sp.lu(rand_int_matrix)[2], decimal=8)
 """
-    def test_lu_arbitrary(self):
-        a_sym = tests.generate_pos_dif(2000, -1000, 1000)
-        assert_array_almost_equal(lu_arbitrary.lu_block(a_sym, 42)[0], sp.lu(a_sym)[1], decimal=12)
 
 
 if __name__ == '__main__':

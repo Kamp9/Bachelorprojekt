@@ -49,6 +49,7 @@ def lu_block(A, r):
     return L, U
 """
 
+
 def lu_out_of_place(A):
     A = A.astype(np.float64)
     m, n = A.shape
