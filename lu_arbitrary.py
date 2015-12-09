@@ -85,7 +85,6 @@ def lu_block(A, r):
 
 def find_pivot(A, pivoting):
     A = np.abs(A)
-
     # partial pivoting
     if pivoting == 0:
         return A.argmax()
@@ -122,12 +121,12 @@ def permute(P, L, U, Q, k, (i, j)):
         Q[i], Q[k] = Q[k], Q[i]
 
 
-def permute_partial(P, L, U, k, i):
+def permute_partial(P, L, A, k, i):
     # Permuter raekker
     if i != k:
         P[i], P[k] = P[k], P[i]
-        L[[i, k], :k] = L[[k, i], :k]
-        U[[i, k], k:] = U[[k, i], k:]
+        #L[[i, k], :k] = L[[k, i], :k]
+        A[[i, k], k:] = A[[k, i], k:]
 
 
 def lu_partial(A):
@@ -155,12 +154,9 @@ def lu_partial_block(A, r):
     L = np.identity(m)
     U = np.zeros((m, m))
     P = range(m)
-    Q = range(m)
     for k in range(0, m, r):
-        PLU = lu_partial(A[k:, k:k+r])
-        L[k:, k:k+r] = PLU[1]
-        U[k:k+r, k:k+r] = PLU[2]
-        U[k:k+r, k+r:] = row_substitution(L[k:k+r, k:k+r], A[k:k+r, k+r:])
+        L[k:, k:k+r] = lu_partial(A[k:, k:k+r])[1]
+        U[k:k+r, k:] = lu_partial(A[k:k+r, k:])[2]
         A[k+r:, k+r:] -= np.dot(L[k+r:, k:k+r], U[k:k+r, k+r:])
     return P, L, U
 
@@ -170,8 +166,14 @@ a_sym = tests.generate_pos_dif(4, -1000, 1000)
 
 print rand_int_matrix
 
-print lu_partial_block(rand_int_matrix, 2)[1]
-print lu_partial_block(rand_int_matrix, 2)[2]
+# print lu_partial_block(rand_int_matrix, 2)[1]
+# print lu_partial_block(rand_int_matrix, 2)[2]
 
+print lu_partial(rand_int_matrix)[0]
+print lu_partial(rand_int_matrix)[1]
+print lu_partial(rand_int_matrix)[2]
+
+
+print sp.lu(rand_int_matrix)[0]
 print sp.lu(rand_int_matrix)[1]
 print sp.lu(rand_int_matrix)[2]
