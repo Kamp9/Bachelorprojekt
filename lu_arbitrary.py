@@ -125,7 +125,7 @@ def permute_partial(P, L, A, k, i):
     # Permuter raekker
     if i != k:
         P[i], P[k] = P[k], P[i]
-        #L[[i, k], :k] = L[[k, i], :k]
+        L[[i, k], :k] = L[[k, i], :k]
         A[[i, k], k:] = A[[k, i], k:]
 
 
@@ -148,6 +148,10 @@ def lu_partial(A):
     return P, L, U
 
 
+def swap_row_to_k(L, k, i):
+    L[[i, k], :k] = L[[k, i], :k]
+
+
 def lu_partial_block(A, r):
     m, n = A.shape
     A = A.astype(np.float64)
@@ -155,8 +159,11 @@ def lu_partial_block(A, r):
     U = np.zeros((m, m))
     P = range(m)
     for k in range(0, m, r):
-        L[k:, k:k+r] = lu_partial(A[k:, k:k+r])[1]
-        U[k:k+r, k:] = lu_partial(A[k:k+r, k:])[2]
+        lal = lu_partial(A[k:, k:k+r])
+        L[k:, k:k+r] = lal[1]
+        U[k:k+r, k:k+r] = lal[1][:r, :r]
+        print row_substitution(lal[1][:r, :r], A[k:k+r, k+r:])
+        U[k:k+r, k+r:] = row_substitution(lal[1][:r, :r], A[k:k+r, k+r:])
         A[k+r:, k+r:] -= np.dot(L[k+r:, k:k+r], U[k:k+r, k+r:])
     return P, L, U
 
@@ -169,11 +176,10 @@ print rand_int_matrix
 # print lu_partial_block(rand_int_matrix, 2)[1]
 # print lu_partial_block(rand_int_matrix, 2)[2]
 
-print lu_partial(rand_int_matrix)[0]
-print lu_partial(rand_int_matrix)[1]
-print lu_partial(rand_int_matrix)[2]
-
-
 print sp.lu(rand_int_matrix)[0]
 print sp.lu(rand_int_matrix)[1]
 print sp.lu(rand_int_matrix)[2]
+
+print lu_partial_block(rand_int_matrix, 2)[0]
+print lu_partial_block(rand_int_matrix, 2)[1]
+print lu_partial_block(rand_int_matrix, 2)[2]
