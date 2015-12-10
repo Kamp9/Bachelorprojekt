@@ -14,6 +14,21 @@ class TestLinAlg(unittest.TestCase):
         a_sym = tests.generate_pos_dif(1000, -1000, 1000)
         assert_array_almost_equal(lu_arbitrary.lu_block(a_sym, 42)[0], sp.lu(a_sym)[1], decimal=12)
         assert_array_almost_equal(lu_arbitrary.lu_block(a_sym, 42)[1], sp.lu(a_sym)[2], decimal=8)
+
+    def test_lu_block(self):
+        rand_int_matrix = np.random.randint(-1000, 1000, size=(1000, 1000))
+        assert_array_almost_equal(lu.lu_inplace(rand_int_matrix)[0], lu.lu_block(rand_int_matrix, 10)[0], decimal=2)
+
+    def test_lu_block_arbitrary(self):
+        rand_int_matrix = np.random.randint(-1000, 1000, size=(1000, 1000))
+        assert_array_almost_equal(lu_arbitrary.lu_partial(rand_int_matrix)[1], sp.lu(rand_int_matrix)[1], decimal=12)
+        assert_array_almost_equal(lu_arbitrary.lu_partial(rand_int_matrix)[2], sp.lu(rand_int_matrix)[2], decimal=8)
+
+    def test_lu_block_arbitrary2(self):
+        rand_int_matrix = np.random.randint(-1000, 1000, size=(1000, 1000))
+        assert_array_almost_equal(lu_arbitrary.lu_partial_block(rand_int_matrix, 42)[1], sp.lu(rand_int_matrix)[1], decimal=12)
+        assert_array_almost_equal(lu_arbitrary.lu_partial_block(rand_int_matrix, 42)[2], sp.lu(rand_int_matrix)[2], decimal=8)
+
 """
     def test_cholesky(self):
         a = np.random.random_integers(-1000, 1000, size=(1000, 1000))
@@ -44,10 +59,6 @@ class TestLinAlg(unittest.TestCase):
         assert_array_almost_equal(sp_solve2, solve.solve(rand_int_matrix, rand_int_col, 1), decimal=9)
         assert_array_almost_equal(sp_solve2, solve.solve(rand_int_matrix, rand_int_col, 2), decimal=9)
         assert_array_almost_equal(sp_solve2, solve.solve(rand_int_matrix, rand_int_col, 3), decimal=9)
-
-    def test_lu_block(self):
-        rand_int_matrix = np.random.randint(-1000, 1000, size=(1000, 1000))
-        assert_array_almost_equal(lu.lu_inplace(rand_int_matrix)[0], lu.lu_block(rand_int_matrix, 10)[0], decimal=2)
 
     def test_inverse(self):
         rand_int_matrix = np.random.randint(-1000, 1000, size=(100, 100))

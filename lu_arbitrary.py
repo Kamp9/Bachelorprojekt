@@ -140,7 +140,7 @@ def lu_partial(A):
         L = np.eye(m, m)
         U = np.zeros((m, n))
     for k in range(min(m, n)):
-        i = k + find_pivot(A[k:, k], 0)  # måske lidt underligt at slice inden pivot findes.
+        i = k + find_pivot(A[k:, k], 0)
         permute_partial(P, L, A, k, i)
         U[k, k:] = A[k, k:]
         L[k+1:, k] = A[k+1:, k] / U[k, k]
@@ -148,8 +148,12 @@ def lu_partial(A):
     return P, L, U
 
 
-def swap_row_to_k(L, k, i):
-    L[[i, k], :k] = L[[k, i], :k]
+def P_to_Pmatrix(P):
+    m = len(P)
+    Pmatrix = np.zeros((m, m))
+    for i, e in enumerate(P):
+        Pmatrix[e, i] = 1
+    return Pmatrix
 
 
 def lu_partial_block(A, r):
@@ -157,29 +161,43 @@ def lu_partial_block(A, r):
     A = A.astype(np.float64)
     L = np.identity(m)
     U = np.zeros((m, m))
-    P = range(m)
     for k in range(0, m, r):
         lal = lu_partial(A[k:, k:k+r])
         L[k:, k:k+r] = lal[1]
-        U[k:k+r, k:k+r] = lal[1][:r, :r]
-        print row_substitution(lal[1][:r, :r], A[k:k+r, k+r:])
-        U[k:k+r, k+r:] = row_substitution(lal[1][:r, :r], A[k:k+r, k+r:])
+        U[k:k+r, k:k+r] = lal[2][:r, :r]
+        P = P_to_Pmatrix(lal[0])
+        if k > 0:
+            L[k:, :k] = np.dot(P.transpose(), L[k:, :k])
+        lal2 = L[k:k+r, k:k+r]
+        A[k:, k:] = np.dot(P.transpose(), A[k:, k:])
+        U[k:k+r, k+r:] = row_substitution(lal2, A[k:k+r, k+r:])
         A[k+r:, k+r:] -= np.dot(L[k+r:, k:k+r], U[k:k+r, k+r:])
     return P, L, U
 
 
 rand_int_matrix = np.random.randint(-1000, 1000, size=(4, 4))
 a_sym = tests.generate_pos_dif(4, -1000, 1000)
+#print rand_int_matrix
 
-print rand_int_matrix
+matrix = np.array([[-874, -965, 18, -71],
+                   [230, -457, -817, -508],
+                   [570, -781, -109, -751],
+                   [-4, -497, -630, 230]])
 
-# print lu_partial_block(rand_int_matrix, 2)[1]
-# print lu_partial_block(rand_int_matrix, 2)[2]
+matrix2 = np.array([[-549, -257, -184, 661],
+                    [903, 272, -341, -451],
+                    [628, 484, -577, 475],
+                    [-42, -474, 935, -423]])
 
-print sp.lu(rand_int_matrix)[0]
+a = tests.generate_pos_dif(4, -1000, 1000)
+"""
 print sp.lu(rand_int_matrix)[1]
 print sp.lu(rand_int_matrix)[2]
 
-print lu_partial_block(rand_int_matrix, 2)[0]
+#print lu_partial(rand_int_matrix)[1]
+#print lu_partial(rand_int_matrix)[2]
+
 print lu_partial_block(rand_int_matrix, 2)[1]
 print lu_partial_block(rand_int_matrix, 2)[2]
+"""
+#print row_substitution(np.array([[1., 0.], [-0.04651163, 1.]]), np.array([[-341., -451.], [-577., 475.]]))
