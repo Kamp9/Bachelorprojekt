@@ -30,5 +30,5 @@ np.fill_diagonal(a_sym, b)
 
 cProfile.run('lu_arbitrary.lu_block(rand_matrix, 42)')
 cProfile.run('sp.lu(rand_matrix)')
-cProfile.run('lu_arbitrary.lu_partial_block(rand_matrix, 42)')
+cProfile.run('lu_arbitrary.lu_partial_block2(rand_matrix, 42)')
 

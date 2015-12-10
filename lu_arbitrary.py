@@ -165,14 +165,31 @@ def lu_partial_block(A, r):
         lal = lu_partial(A[k:, k:k+r])
         L[k:, k:k+r] = lal[1]
         U[k:k+r, k:k+r] = lal[2][:r, :r]
-        P = P_to_Pmatrix(lal[0])
-        if k > 0:
-            L[k:, :k] = np.dot(P.transpose(), L[k:, :k])
+        P = P_to_Pmatrix(lal[0]).transpose()
+        L[k:, :k] = np.dot(P, L[k:, :k])
         lal2 = L[k:k+r, k:k+r]
-        A[k:, k:] = np.dot(P.transpose(), A[k:, k:])
+        A[k:, k:] = np.dot(P, A[k:, k:])
         U[k:k+r, k+r:] = row_substitution(lal2, A[k:k+r, k+r:])
         A[k+r:, k+r:] -= np.dot(L[k+r:, k:k+r], U[k:k+r, k+r:])
     return P, L, U
+
+
+def lu_partial_block2(A, r):
+    m, n = A.shape
+    A = A.astype(np.float64)
+    L = np.identity(m)
+    U = np.zeros((m, m))
+    for k in range(0, m, r):
+        lal = lu_partial(A[k:, k:k+r])
+        L[k:, k:k+r] = lal[1]
+        P = P_to_Pmatrix(lal[0]).transpose()
+        L[k:, :k] = np.dot(P, L[k:, :k])
+        lal2 = L[k:k+r, k:k+r]
+        A[k:, k:] = np.dot(P, A[k:, k:])
+        U[k:k+r, k:] = lu_out_of_place(A[k:k+r, k:])[1]
+        A[k+r:, k+r:] -= np.dot(L[k+r:, k:k+r], U[k:k+r, k+r:])
+    return P, L, U
+
 
 
 rand_int_matrix = np.random.randint(-1000, 1000, size=(4, 4))
@@ -190,14 +207,16 @@ matrix2 = np.array([[-549, -257, -184, 661],
                     [-42, -474, 935, -423]])
 
 a = tests.generate_pos_dif(4, -1000, 1000)
-"""
+
+
+print sp.lu(rand_int_matrix)[0]
 print sp.lu(rand_int_matrix)[1]
 print sp.lu(rand_int_matrix)[2]
 
 #print lu_partial(rand_int_matrix)[1]
 #print lu_partial(rand_int_matrix)[2]
+print lu_partial_block2(rand_int_matrix, 2)[0]
+print lu_partial_block2(rand_int_matrix, 2)[1]
+print lu_partial_block2(rand_int_matrix, 2)[2]
 
-print lu_partial_block(rand_int_matrix, 2)[1]
-print lu_partial_block(rand_int_matrix, 2)[2]
-"""
 #print row_substitution(np.array([[1., 0.], [-0.04651163, 1.]]), np.array([[-341., -451.], [-577., 475.]]))
