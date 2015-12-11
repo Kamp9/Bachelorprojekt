@@ -7,7 +7,7 @@ import lu_decomposition2
 import solve
 import lu_arbitrary
 
-rand_matrix = np.random.rand(2000, 2000)
+rand_matrix = np.random.rand(2500, 2500)
 
 """
 rand_col = np.random.rand(1000, 1)
@@ -28,7 +28,7 @@ np.fill_diagonal(a_sym, b)
 # cProfile.run('cholesky.cholesky(a_sym)')
 # cProfile.run('cholesky.cholesky2(a_sym)')
 
-cProfile.run('lu_arbitrary.lu_block(rand_matrix, 42)')
+#cProfile.run('lu_arbitrary.lu_block(rand_matrix, 42)')
 cProfile.run('sp.lu(rand_matrix)')
-cProfile.run('lu_arbitrary.lu_partial_block2(rand_matrix, 42)')
+cProfile.run('lu_arbitrary.lu_partial_block(rand_matrix, 125)')
 

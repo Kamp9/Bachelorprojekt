@@ -2,7 +2,7 @@
 import numpy as np
 import tests
 import scipy.linalg as sp
-
+np.set_printoptions(linewidth=200)
 
 """
 def lu_block(A, r):
@@ -162,14 +162,15 @@ def lu_partial_block(A, r):
     L = np.identity(m)
     U = np.zeros((m, m))
     for k in range(0, m, r):
-        lal = lu_partial(A[k:, k:k+r])
-        L[k:, k:k+r] = lal[1]
-        U[k:k+r, k:k+r] = lal[2][:r, :r]
-        P = P_to_Pmatrix(lal[0]).transpose()
+        PLU = lu_partial(A[k:, k:k+r])
+        L[k:, k:k+r] = PLU[1]
+        U[k:k+r, k:k+r] = PLU[2][:r, :r]
+        P = P_to_Pmatrix(PLU[0]).transpose()
         L[k:, :k] = np.dot(P, L[k:, :k])
-        lal2 = L[k:k+r, k:k+r]
         A[k:, k:] = np.dot(P, A[k:, k:])
-        U[k:k+r, k+r:] = row_substitution(lal2, A[k:k+r, k+r:])
+        print
+        print P
+        U[k:k+r, k+r:] = row_substitution(L[k:k+r, k:k+r], A[k:k+r, k+r:])
         A[k+r:, k+r:] -= np.dot(L[k+r:, k:k+r], U[k:k+r, k+r:])
     return P, L, U
 
@@ -192,7 +193,7 @@ def lu_partial_block2(A, r):
 
 
 
-rand_int_matrix = np.random.randint(-1000, 1000, size=(4, 4))
+rand_int_matrix = np.random.randint(-1000, 1000, size=(6, 6))
 a_sym = tests.generate_pos_dif(4, -1000, 1000)
 #print rand_int_matrix
 
@@ -210,13 +211,8 @@ a = tests.generate_pos_dif(4, -1000, 1000)
 
 
 print sp.lu(rand_int_matrix)[0]
-print sp.lu(rand_int_matrix)[1]
-print sp.lu(rand_int_matrix)[2]
-
 #print lu_partial(rand_int_matrix)[1]
 #print lu_partial(rand_int_matrix)[2]
-print lu_partial_block2(rand_int_matrix, 2)[0]
-print lu_partial_block2(rand_int_matrix, 2)[1]
-print lu_partial_block2(rand_int_matrix, 2)[2]
+print lu_partial_block(rand_int_matrix, 2)[0]
 
-#print row_substitution(np.array([[1., 0.], [-0.04651163, 1.]]), np.array([[-341., -451.], [-577., 475.]]))
+print lu_partial(rand_int_matrix)[0]
