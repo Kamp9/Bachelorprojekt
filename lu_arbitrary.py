@@ -155,12 +155,26 @@ def permute_rows(P, A):
     return PA
 
 
+def transpose_array(P):
+    P_transpose = np.zeros(len(P), dtype=int)
+    for i, e in enumerate(P):
+        P_transpose[e] = i
+    return P_transpose
+
+
 def P_to_Pmatrix(P):
     m = len(P)
     Pmatrix = np.zeros((m, m))
     for i, e in enumerate(P):
         Pmatrix[e, i] = 1
     return Pmatrix
+
+
+def permute_array(P, a):
+    Pa = np.zeros(len(P), dtype=int)
+    for i, e in enumerate(P):
+        Pa[i] = a[P[i]]
+    return Pa
 
 
 def lu_partial_block(A, r):
@@ -171,9 +185,9 @@ def lu_partial_block(A, r):
     Plal = np.identity(m)
     for k in range(0, m, r):
         PLU = lu_partial(A[k:, k:k+r])
+        P = P_to_Pmatrix(PLU[0])
         L[k:, k:k+r] = PLU[1]
         U[k:k+r, k:k+r] = PLU[2][:r, :r]
-        P = P_to_Pmatrix(PLU[0])
         L[k:, :k] = np.dot(P.transpose(), L[k:, :k])
         A[k:, k:] = np.dot(P.transpose(), A[k:, k:])
         Plal[:, k:] = np.dot(Plal[:, k:], P)
@@ -183,20 +197,29 @@ def lu_partial_block(A, r):
 
 
 def lu_partial_block2(A, r):
+    """
+    Skal nok også virke for ikke kvadratiske matricer
+    :param A:
+    :param r:
+    :return:
+    """
     m, n = A.shape
     A = A.astype(np.float64)
+    P = range(m)
     L = np.identity(m)
     U = np.zeros((m, m))
     for k in range(0, m, r):
-        lal = lu_partial(A[k:, k:k+r])
-        L[k:, k:k+r] = lal[1]
-        P = P_to_Pmatrix(lal[0]).transpose()
-        L[k:, :k] = np.dot(P, L[k:, :k])
-        lal2 = L[k:k+r, k:k+r]
-        A[k:, k:] = np.dot(P, A[k:, k:])
-        U[k:k+r, k:] = lu_out_of_place(A[k:k+r, k:])[1]
+        PLU = lu_partial(A[k:, k:k+r])
+        small_P = PLU[0]
+        small_P_t = transpose_array(small_P)
+        P[k:] = permute_array(small_P, P[k:])
+        L[k:, k:k+r] = PLU[1]
+        U[k:k+r, k:k+r] = PLU[2][:r, :r]
+        L[k:, :k] = permute_rows(small_P_t, L[k:, :k])
+        A[k:, k:] = permute_rows(small_P_t, A[k:, k:])
+        U[k:k+r, k+r:] = row_substitution(L[k:k+r, k:k+r], A[k:k+r, k+r:])
         A[k+r:, k+r:] -= np.dot(L[k+r:, k:k+r], U[k:k+r, k+r:])
-    return P, L, U
+    return P_to_Pmatrix(P), L, U
 
 
 rand_int_matrix = np.random.randint(-1000, 1000, size=(6, 6))
@@ -214,11 +237,3 @@ matrix2 = np.array([[-549, -257, -184, 661],
                     [-42, -474, 935, -423]])
 
 a = tests.generate_pos_dif(4, -1000, 1000)
-
-
-print sp.lu(rand_int_matrix)[0]
-#print lu_partial(rand_int_matrix)[1]
-#print lu_partial(rand_int_matrix)[2]
-print lu_partial_block(rand_int_matrix, 2)[0]
-
-print lu_partial(rand_int_matrix)[0]
