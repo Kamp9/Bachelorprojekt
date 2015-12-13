@@ -7,7 +7,7 @@ import lu_decomposition2
 import solve
 import lu_arbitrary
 
-rand_matrix = np.random.rand(2500, 2500)
+rand_matrix = np.random.rand(2000, 2000)
 
 """
 rand_col = np.random.rand(1000, 1)

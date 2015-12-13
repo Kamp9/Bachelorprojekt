@@ -148,6 +148,13 @@ def lu_partial(A):
     return P, L, U
 
 
+def permute_rows(P, A):
+    PA = np.empty(A.shape)
+    for i in range(len(P)):
+        PA[P[i], :] = A[i, :]
+    return PA
+
+
 def P_to_Pmatrix(P):
     m = len(P)
     Pmatrix = np.zeros((m, m))
@@ -161,18 +168,18 @@ def lu_partial_block(A, r):
     A = A.astype(np.float64)
     L = np.identity(m)
     U = np.zeros((m, m))
+    Plal = np.identity(m)
     for k in range(0, m, r):
         PLU = lu_partial(A[k:, k:k+r])
         L[k:, k:k+r] = PLU[1]
         U[k:k+r, k:k+r] = PLU[2][:r, :r]
-        P = P_to_Pmatrix(PLU[0]).transpose()
-        L[k:, :k] = np.dot(P, L[k:, :k])
-        A[k:, k:] = np.dot(P, A[k:, k:])
-        print
-        print P
+        P = P_to_Pmatrix(PLU[0])
+        L[k:, :k] = np.dot(P.transpose(), L[k:, :k])
+        A[k:, k:] = np.dot(P.transpose(), A[k:, k:])
+        Plal[:, k:] = np.dot(Plal[:, k:], P)
         U[k:k+r, k+r:] = row_substitution(L[k:k+r, k:k+r], A[k:k+r, k+r:])
         A[k+r:, k+r:] -= np.dot(L[k+r:, k:k+r], U[k:k+r, k+r:])
-    return P, L, U
+    return Plal, L, U
 
 
 def lu_partial_block2(A, r):
@@ -190,7 +197,6 @@ def lu_partial_block2(A, r):
         U[k:k+r, k:] = lu_out_of_place(A[k:k+r, k:])[1]
         A[k+r:, k+r:] -= np.dot(L[k+r:, k:k+r], U[k:k+r, k+r:])
     return P, L, U
-
 
 
 rand_int_matrix = np.random.randint(-1000, 1000, size=(6, 6))

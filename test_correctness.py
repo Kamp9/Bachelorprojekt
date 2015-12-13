@@ -25,9 +25,10 @@ class TestLinAlg(unittest.TestCase):
         assert_array_almost_equal(lu_arbitrary.lu_partial(rand_int_matrix)[2], sp.lu(rand_int_matrix)[2], decimal=8)
 
     def test_lu_block_arbitrary2(self):
-        rand_int_matrix = np.random.randint(-1000, 1000, size=(2000, 2000))
+        rand_int_matrix = np.random.randint(-1000, 1000, size=(1000, 1000))
+        np.array_equal(lu_arbitrary.lu_partial_block(rand_int_matrix, 22)[0], sp.lu(rand_int_matrix)[0])
         assert_array_almost_equal(lu_arbitrary.lu_partial_block(rand_int_matrix, 22)[1], sp.lu(rand_int_matrix)[1], decimal=12)
-        assert_array_almost_equal(lu_arbitrary.lu_partial_block(rand_int_matrix, 22)[2], sp.lu(rand_int_matrix)[2], decimal=7)
+        assert_array_almost_equal(lu_arbitrary.lu_partial_block(rand_int_matrix, 22)[2], sp.lu(rand_int_matrix)[2], decimal=8)
 
 """
     def test_cholesky(self):
