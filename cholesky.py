@@ -60,3 +60,5 @@ def cholesky_block(A, r):
         U[k:k+r, k+r:] = forward_substitution(U[k:k+r, k:k+r].transpose(), A[k:k+r, k+r:])
         A[k+r:, k+r:] -= (np.dot(U[k:k+r, k+r:].transpose(), U[k:k+r, k+r:]))
     return U
+
+

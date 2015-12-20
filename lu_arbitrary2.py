@@ -1,25 +1,27 @@
 # coding=utf-8
 import numpy as np
 import tests
+import lu_arbitrary
 import scipy.linalg as sp
 np.set_printoptions(linewidth=200)
 
 
 def lu_out_of_place(A):
-    A = A.astype(np.float64)
     m, n = A.shape
-    if m > n:
-        L = np.eye(m, n)
-        U = np.zeros((n, n))
-    else:
-        L = np.eye(m, m)
-        U = np.zeros((m, n))
+    U = A.astype(np.float64)
     for k in range(min(m, n)):
-        U[k, k:] = A[k, k:]
-        L[k+1:, k] = A[k+1:, k] / U[k, k]
-        A[k+1:, k+1:] -= L[k+1:, k, np.newaxis] * U[k, k+1:]
-    return L, U
+        U[k+1:, k] = U[k+1:, k] / U[k, k]
+        U[k+1:, k+1:] -= U[k+1:, k, np.newaxis] * U[k, k+1:]
+    L = np.tril(U)
+    np.fill_diagonal(L, 1)
+    return L[:m, :m], np.triu(U[:n, :n])
 
+"""
+if m < n:
+    return L[:m, :m], np.triu(U)
+else:
+    return L, np.triu(U[:n, :n])
+"""
 
 def row_substitution(L, B):
     m, n = L.shape
@@ -82,31 +84,38 @@ def permute(P, L, U, Q, k, (i, j)):
         Q[i], Q[k] = Q[k], Q[i]
 
 
-def permute_partial(P, L, A, k, i):
+def permute_partial(P, A, k, i):
     # Permuter raekker
     if i != k:
         P[i], P[k] = P[k], P[i]
-        L[[i, k], :k] = L[[k, i], :k]
-        A[[i, k], k:] = A[[k, i], k:]
+        A[[i, k]] = A[[k, i]]
+
+
+
+"""
+    m, n = A.shape
+    U = A.astype(np.float64)
+    for k in range(min(m, n)):
+        U[k+1:, k] = U[k+1:, k] / U[k, k]
+        U[k+1:, k+1:] -= U[k+1:, k, np.newaxis] * U[k, k+1:]
+    L = np.tril(U)
+    np.fill_diagonal(L, 1)
+    return L[:m, :m], np.triu(U[:n, :n])
+"""
 
 
 def lu_partial(A):
-    A = A.astype(np.float64)
     m, n = A.shape
+    U = A.astype(np.float64)
     P = range(m)
-    if m > n:
-        L = np.eye(m, n)
-        U = np.zeros((n, n))
-    else:
-        L = np.eye(m, m)
-        U = np.zeros((m, n))
     for k in range(min(m, n)):
-        i = k + find_pivot(A[k:, k], 0)
-        permute_partial(P, L, A, k, i)
-        U[k, k:] = A[k, k:]
-        L[k+1:, k] = A[k+1:, k] / U[k, k]
-        A[k+1:, k+1:] -= L[k+1:, k, np.newaxis] * U[k, k+1:]
-    return P, L, U
+        i = k + find_pivot(U[k:, k], 0)
+        permute_partial(P, U, k, i)
+        U[k+1:, k] = U[k+1:, k] / U[k, k]
+        U[k+1:, k+1:] -= U[k+1:, k, np.newaxis] * U[k, k+1:]
+    L = np.tril(U)
+    np.fill_diagonal(L, 1)
+    return P, L[:m, :m], np.triu(U[:n, :n])
 
 
 def permute_rows(P, A):
@@ -161,12 +170,6 @@ def lu_partial_block(A, r):
 
 
 def lu_partial_block2(A, r):
-    """
-    Skal måske også virke for ikke kvadratiske matricer
-    :param A:
-    :param r:
-    :return:
-    """
     m, n = A.shape
     A = A.astype(np.float64)
     P = range(m)
@@ -184,8 +187,6 @@ def lu_partial_block2(A, r):
         U[k:k+r, k+r:] = row_substitution(L[k:k+r, k:k+r], A[k:k+r, k+r:])
         A[k+r:, k+r:] -= np.dot(L[k+r:, k:k+r], U[k:k+r, k+r:])
     return P_to_Pmatrix(P), L, U
-1
-0
 
 
 rand_int_matrix = np.random.randint(-1000, 1000, size=(6, 6))
@@ -212,7 +213,4 @@ qlal = np.array([[0, 1, 0, 0],
                  [0, 0, 0, 1],
                  [1, 0, 0, 0]])
 
-
-print np.dot(np.dot(plal, matrix2), qlal)
-print np.dot(plal, matrix2)
 

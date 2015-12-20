@@ -67,7 +67,3 @@ def lu_out_of_place(A):
 
 rand_int_matrix = np.random.randint(-1000, 1000, size=(6, 6))
 
-print lu.lu_partial_pivot(rand_int_matrix)[0]
-print lu.lu_partial_pivot(rand_int_matrix)[0].transpose()
-
-print sp.lu(rand_int_matrix)[0]

@@ -42,7 +42,7 @@ def permute_PLUQ((i, j), P, L, U, Q, k):
 
 
 # Find (P,L,U,Q) saa P,Q er permutationer (i -> P[i], j -> Q[j]), L nedre-triangulaer med 1-diagonal,
-# og U er oevre-triangulaer. 
+# og U er oevre-triangulaer.
 def lu_decompose(A, pivot_scheme=0):
     n = len(A)
     L = identity(n)

@@ -6,6 +6,7 @@ import lu
 import lu_decomposition2
 import solve
 import lu_arbitrary
+import lu_arbitrary2
 import time
 
 rand_matrix = np.random.rand(4000, 4000)
@@ -31,7 +32,7 @@ np.fill_diagonal(a_sym, b)
 
 # cProfile.run('lu_arbitrary.lu_block(rand_matrix, 42)')
 cProfile.run('sp.lu_factor(rand_matrix)')
-cProfile.run('lu_arbitrary.lu_partial_block2(rand_matrix, 68)')
+cProfile.run('lu_arbitrary2.lu_partial_block2(rand_matrix, 68)')
 
 
 def find_best_blocksize():

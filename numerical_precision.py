@@ -11,6 +11,10 @@ splal = np.dot(P2, np.dot(L2, U2))
 
 P3, Q3, L3, U3 = lu.lu_complete_pivot(rand_int_matrix)
 
+L4, U4 = lu.lu_inplace(rand_int_matrix)
+
+inplace = np.dot(L4, U4)
+
 completelal = np.dot(np.dot(P3, np.dot(L3, U3)), Q3)
 
 print completelal
@@ -28,4 +32,5 @@ def dif_check(new_A, original_A):
 print dif_check(Alal, rand_int_matrix)
 print dif_check(completelal, rand_int_matrix)
 print dif_check(splal, rand_int_matrix)
+print dif_check(inplace, rand_int_matrix)
 

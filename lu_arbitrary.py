@@ -184,9 +184,6 @@ def lu_partial_block2(A, r):
         U[k:k+r, k+r:] = row_substitution(L[k:k+r, k:k+r], A[k:k+r, k+r:])
         A[k+r:, k+r:] -= np.dot(L[k+r:, k:k+r], U[k:k+r, k+r:])
     return P_to_Pmatrix(P), L, U
-1
-0
-
 
 rand_int_matrix = np.random.randint(-1000, 1000, size=(6, 6))
 a_sym = tests.generate_pos_dif(4, -1000, 1000)
@@ -211,8 +208,4 @@ qlal = np.array([[0, 1, 0, 0],
                  [0, 0, 1, 0],
                  [0, 0, 0, 1],
                  [1, 0, 0, 0]])
-
-
-print np.dot(np.dot(plal, matrix2), qlal)
-print np.dot(plal, matrix2)
 
