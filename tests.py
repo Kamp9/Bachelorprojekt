@@ -47,7 +47,6 @@ def lu_block(A, r):
         U[k:k+r, k+r:] = row_substitution(L[k:k+r, k:k+r], A[k:k+r, k+r:])
         A[k+r:, k+r:] -= np.dot(L[k+r:, k:k+r], U[k:k+r, k+r:])
     return L, U
-"""
 
 
 def lu_out_of_place(A):
@@ -64,13 +63,11 @@ def lu_out_of_place(A):
         L[k+1:, k] = A[k+1:, k] / U[k, k]
         A[k+1:, k+1:] -= L[k+1:, k, np.newaxis] * U[k, k+1:]
     return L, U
+"""
 
-a_sym = generate_pos_dif(4, -1000, 1000)
-"""
-print a_sym[:3, :]
-print
-print sp.lu(a_sym[:3, :])[1]
-# print sp.lu(a[:, :2])[2]
-print
-print lu_out_of_place(a_sym[:3, :])[0]
-"""
+rand_int_matrix = np.random.randint(-1000, 1000, size=(6, 6))
+
+print lu.lu_partial_pivot(rand_int_matrix)[0]
+print lu.lu_partial_pivot(rand_int_matrix)[0].transpose()
+
+print sp.lu(rand_int_matrix)[0]

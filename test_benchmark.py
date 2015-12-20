@@ -6,8 +6,9 @@ import lu
 import lu_decomposition2
 import solve
 import lu_arbitrary
+import time
 
-rand_matrix = np.random.rand(2500, 2500)
+rand_matrix = np.random.rand(4000, 4000)
 
 """
 rand_col = np.random.rand(1000, 1)
@@ -28,10 +29,33 @@ np.fill_diagonal(a_sym, b)
 # cProfile.run('cholesky.cholesky(a_sym)')
 # cProfile.run('cholesky.cholesky2(a_sym)')
 
-#cProfile.run('lu_arbitrary.lu_block(rand_matrix, 42)')
-cProfile.run('sp.lu(rand_matrix)')
-cProfile.run('lu_arbitrary.lu_partial_block2(rand_matrix, 125)')
-cProfile.run('lu.lu_block(rand_matrix, 125)')
-cProfile.run('lu.lu_partial_pivot(rand_matrix)')
+# cProfile.run('lu_arbitrary.lu_block(rand_matrix, 42)')
+cProfile.run('sp.lu_factor(rand_matrix)')
+cProfile.run('lu_arbitrary.lu_partial_block2(rand_matrix, 68)')
 
+
+def find_best_blocksize():
+    t0 = time.clock()
+    lu_arbitrary.lu_partial_block2(rand_matrix, 1)
+    best_time = time.clock() - t0
+    best_block = 1
+    print best_time
+    print
+    for i in range(2, 1001):
+        t0 = time.clock()
+        lu_arbitrary.lu_partial_block2(rand_matrix, i)
+        new_time = time.clock() - t0
+        if new_time < best_time:
+            best_time = new_time
+            best_block = i
+        print 'i : ' + str(i)
+        print 'i time: ' + str(new_time)
+        print 'best time: ' + str(best_time)
+        print 'best blocksize : ' + str(best_block)
+        print
+#find_best_blocksize()
+
+"""
+116: 68 er bedst med 12.787971 for 2000 x 2000
+"""
 
