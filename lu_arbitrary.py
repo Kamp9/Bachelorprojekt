@@ -187,7 +187,8 @@ def lu_partial_block2(A, r):
 
 rand_int_matrix = np.random.randint(-1000, 1000, size=(6, 6))
 a_sym = tests.generate_pos_dif(4, -1000, 1000)
-#print rand_int_matrix
+#print sp.lu(rand_int_matrix[:, 2:])[0]
+#print sp.lu(rand_int_matrix[2:, :])[0]
 
 matrix = np.array([[-874, -965, 18, -71],
                    [230, -457, -817, -508],

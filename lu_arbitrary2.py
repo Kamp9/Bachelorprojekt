@@ -125,8 +125,7 @@ def permute_rows(P, A):
     return PA
 
 
-def invert_array(P):
-    # kan vi gøre det uden for?
+def transpose_array(P):
     P_transpose = np.zeros(len(P), dtype=int)
     for i, e in enumerate(P):
         P_transpose[e] = i
@@ -134,7 +133,6 @@ def invert_array(P):
 
 
 def P_to_Pmatrix(P):
-    # kan vi gøre det uden for?
     m = len(P)
     Pmatrix = np.zeros((m, m))
     for i, e in enumerate(P):
@@ -143,30 +141,25 @@ def P_to_Pmatrix(P):
 
 
 def permute_array(P, a):
-    # kan vi gøre det uden for?
     Pa = np.zeros(len(P), dtype=int)
     for i in range(len(P)):
         Pa[i] = a[P[i]]
     return Pa
 
 
-def lu_partial_block(A, r):
+"""
     m, n = A.shape
-    A = A.astype(np.float64)
-    L = np.identity(m)
-    U = np.zeros((m, m))
-    Plal = np.identity(m)
-    for k in range(0, m, r):
-        PLU = lu_partial(A[k:, k:k+r])
-        P = P_to_Pmatrix(PLU[0])
-        L[k:, k:k+r] = PLU[1]
-        U[k:k+r, k:k+r] = PLU[2][:r, :r]
-        L[k:, :k] = np.dot(P.transpose(), L[k:, :k])
-        A[k:, k:] = np.dot(P.transpose(), A[k:, k:])
-        Plal[:, k:] = np.dot(Plal[:, k:], P)
-        U[k:k+r, k+r:] = row_substitution(L[k:k+r, k:k+r], A[k:k+r, k+r:])
-        A[k+r:, k+r:] -= np.dot(L[k+r:, k:k+r], U[k:k+r, k+r:])
-    return Plal, L, U
+    U = A.astype(np.float64)
+    P = range(m)
+    for k in range(min(m, n)):
+        i = k + find_pivot(U[k:, k], 0)
+        permute_partial(P, U, k, i)
+        U[k+1:, k] = U[k+1:, k] / U[k, k]
+        U[k+1:, k+1:] -= U[k+1:, k, np.newaxis] * U[k, k+1:]
+    L = np.tril(U)
+    np.fill_diagonal(L, 1)
+    return P, L[:m, :m], np.triu(U[:n, :n])
+"""
 
 
 def lu_partial_block2(A, r):
@@ -175,15 +168,15 @@ def lu_partial_block2(A, r):
     P = range(m)
     L = np.identity(m)
     U = np.zeros((m, m))
-    for k in range(0, m, r):
+    for k in range(0, min(m, n), r):
         PLU = lu_partial(A[k:, k:k+r])
-        small_P = PLU[0]
-        small_P_t = invert_array(small_P)
-        P[k:] = permute_array(small_P, P[k:])
+        temp_P = PLU[0]
+        temp_P_t = transpose_array(temp_P)
+        P[k:] = permute_array(temp_P, P[k:])
         L[k:, k:k+r] = PLU[1]
         U[k:k+r, k:k+r] = PLU[2][:r, :r]
-        L[k:, :k] = permute_rows(small_P_t, L[k:, :k])
-        A[k:, k:] = permute_rows(small_P_t, A[k:, k:])
+        L[k:, :k] = permute_rows(temp_P_t, L[k:, :k])
+        A[k:, k:] = permute_rows(temp_P_t, A[k:, k:])
         U[k:k+r, k+r:] = row_substitution(L[k:k+r, k:k+r], A[k:k+r, k+r:])
         A[k+r:, k+r:] -= np.dot(L[k+r:, k:k+r], U[k:k+r, k+r:])
     return P_to_Pmatrix(P), L, U
@@ -212,5 +205,3 @@ qlal = np.array([[0, 1, 0, 0],
                  [0, 0, 1, 0],
                  [0, 0, 0, 1],
                  [1, 0, 0, 0]])
-
-

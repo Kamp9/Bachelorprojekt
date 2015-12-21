@@ -27,14 +27,8 @@ def back_substitution(U, z):
     return x[:, np.newaxis]
 
 
-# skal ind under solve på et tidspunkt
 def solve_cholesky(A, b):
-    """
-    solve(A, b) is only working on positive definite matrix A
-    :param A:
-    :param b:
-    :return:
-    """
+    # virker ikke på grund af at (1.0 / L[k, k]) *  er fjernet.
     L = cholesky.cholesky(A)
     U = L.transpose()
     z = forward_substitution(L, b)
@@ -44,7 +38,6 @@ def solve_cholesky(A, b):
 
 def solve(A, b, pivoting):
     # Skal gerne returnere sammen dimentioner som b, hvis den skal være ligesom scipy
-    # TODO skal have styr på .transpose() i denne og i lu_decomposition
     # No pivoting
     if pivoting == 0:
         L, U = lu.lu_out_of_place(A)
