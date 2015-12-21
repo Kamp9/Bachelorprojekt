@@ -9,13 +9,12 @@ import lu_arbitrary
 import lu_arbitrary2
 import time
 
-rand_matrix = np.random.rand(2000, 2000)
+rand_matrix = np.random.rand(10, 200000)
 
 """
 rand_col = np.random.rand(1000, 1)
 
-
-a = np.random.random_integers(-1000, 1000, size=(2000, 2000))
+a = np.random.random_integers(-1000, 1000, size                                                                                                         =(2000, 2000))
 b = np.random.random_integers(1000000, 100000000, size=(2000, 1))
 a_sym = (a + a.T)/2
 np.fill_diagonal(a_sym, b)
@@ -34,8 +33,24 @@ np.fill_diagonal(a_sym, b)
 # cProfile.run('sp.lu_factor(rand_matrix)')
 # cProfile.run('lu_arbitrary2.lu_partial_block2(rand_matrix, 68)')
 
-cProfile.run('lu.lu_inplace(rand_matrix)')
-cProfile.run('lu.lu_inplace_with_dot(rand_matrix)')
+# cProfile.run('lu.lu_inplace(rand_matrix)')
+# cProfile.run('lu.lu_inplace_with_dot(rand_matrix)')
+
+# cProfile.run('rand_matrix.argmax()')
+# cProfile.run('python_for(rand_matrix)')
+
+def lal():
+    rand_matrix[[3, 5]] = rand_matrix[[5, 3]]
+
+
+def lal2():
+    temp = np.empty(200000)
+    temp[:] = rand_matrix[3, :]
+    rand_matrix[3, :] = rand_matrix[5, :]
+    rand_matrix[5, :] = temp[:]
+
+cProfile.run('lal2()')
+cProfile.run('lal()')
 
 
 def find_best_blocksize():

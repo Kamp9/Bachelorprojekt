@@ -91,6 +91,14 @@ def permute_partial(P, A, k, i):
         A[[i, k]] = A[[k, i]]
 
 
+def permute_partial2(P, A, k, i):
+    m, n = A.shape
+    temp = np.empty(n)
+    if i != k:
+        P[i], P[k] = P[k], P[i]
+        temp[:] = A[k, :]
+        A[k, :] = A[i, :]
+        A[i, :] = temp[:]
 
 """
     m, n = A.shape
