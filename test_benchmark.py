@@ -8,6 +8,7 @@ import solve
 import lu_arbitrary
 import lu_arbitrary2
 import time
+np.set_printoptions(linewidth=200)
 
 rand_matrix = np.random.rand(3000, 3000)
 
