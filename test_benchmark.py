@@ -10,7 +10,7 @@ import lu_arbitrary2
 import time
 np.set_printoptions(linewidth=200)
 
-rand_matrix = np.random.rand(3000, 3000)
+rand_matrix = np.random.rand(2000, 2000)
 
 rand_col = np.random.rand(1000, 1)
 
@@ -64,14 +64,14 @@ def lal2():
 
 def find_best_blocksize():
     t0 = time.clock()
-    lu_arbitrary.lu_partial_block2(rand_matrix, 1)
+    lu_arbitrary2.lu_partial_block2(rand_matrix, 1)
     best_time = time.clock() - t0
     best_block = 1
     print best_time
     print
     for i in range(2, 1001):
         t0 = time.clock()
-        lu_arbitrary.lu_partial_block2(rand_matrix, i)
+        lu_arbitrary2.lu_partial_block2(rand_matrix, i)
         new_time = time.clock() - t0
         if new_time < best_time:
             best_time = new_time
