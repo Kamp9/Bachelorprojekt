@@ -88,6 +88,4 @@ find_best_blocksize()
 116: 68 er bedst med 12.787971 for 2000 x 2000
 """
 
-"""
-102 på nbi server for 2000 x 2000
-"""
+# 102 nbi server for 2000 x 2000
