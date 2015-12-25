@@ -40,14 +40,14 @@ class TestLinAlg(unittest.TestCase):
         np.array_equal(lu.lu_inplace(rand_int_matrix)[0], lu.lu_inplace_with_dot(rand_int_matrix)[0])
         np.array_equal(lu.lu_inplace(rand_int_matrix)[1], lu.lu_inplace_with_dot(rand_int_matrix)[1])
 
-"""
     def test_cholesky(self):
         a = np.random.random_integers(-1000, 1000, size=(1000, 1000))
         b = np.random.random_integers(1000000, 100000000, size=(1000, 1))
         a_sym = (a + a.T)/2
         np.fill_diagonal(a_sym, b)
         assert_array_almost_equal(sp.cholesky(a_sym), cholesky.cholesky(a_sym), decimal=10)
-
+        np.array_equal(cholesky.cholesky(a_sym), cholesky.cholesky2(a_sym))
+"""
     def test_cholesky_block(self):
         a_sym = tests.generate_pos_dif(2000, -1000, 1000)
         assert_array_almost_equal(sp.cholesky(a_sym), cholesky.cholesky_block(a_sym, 100), decimal=10)

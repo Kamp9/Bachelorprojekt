@@ -112,20 +112,6 @@ def permute_partial2(P, A, k, i):
 """
 
 
-def lu_partial(A):
-    m, n = A.shape
-    U = A.astype(np.float64)
-    P = range(m)
-    for k in range(min(m, n)):
-        i = k + find_pivot(U[k:, k], 0)
-        permute_partial(P, U, k, i)
-        U[k+1:, k] = U[k+1:, k] / U[k, k]
-        U[k+1:, k+1:] -= U[k+1:, k, np.newaxis] * U[k, k+1:]
-    L = np.tril(U)
-    np.fill_diagonal(L, 1)
-    return P, L[:m, :m], np.triu(U[:n, :n])
-
-
 def permute_rows(P, A):
     PA = np.empty(A.shape)
     for i in range(len(P)):
@@ -133,7 +119,7 @@ def permute_rows(P, A):
     return PA
 
 
-def transpose_array(P):
+def invert_permutation_array(P):
     P_transpose = np.zeros(len(P), dtype=int)
     for i, e in enumerate(P):
         P_transpose[e] = i
@@ -170,6 +156,20 @@ def permute_array(P, a):
 """
 
 
+def lu_partial(A):
+    m, n = A.shape
+    U = A.astype(np.float64)
+    P = range(m)
+    for k in range(min(m, n)):
+        i = k + find_pivot(U[k:, k], 0)
+        permute_partial(P, U, k, i)
+        U[k+1:, k] = U[k+1:, k] / U[k, k]
+        U[k+1:, k+1:] -= U[k+1:, k, np.newaxis] * U[k, k+1:]
+    L = np.tril(U)[:m, :m]
+    np.fill_diagonal(L, 1)
+    return P, L, np.triu(U[:n, :n])
+
+
 def lu_partial_block2(A, r):
     m, n = A.shape
     A = A.astype(np.float64)
@@ -179,12 +179,12 @@ def lu_partial_block2(A, r):
     for k in range(0, min(m, n), r):
         PLU = lu_partial(A[k:, k:k+r])
         temp_P = PLU[0]
-        temp_P_t = transpose_array(temp_P)
+        temp_P_i = invert_permutation_array(temp_P)
         P[k:] = permute_array(temp_P, P[k:])
         L[k:, k:k+r] = PLU[1]
         U[k:k+r, k:k+r] = PLU[2][:r, :r]
-        L[k:, :k] = permute_rows(temp_P_t, L[k:, :k])
-        A[k:, k:] = permute_rows(temp_P_t, A[k:, k:])
+        L[k:, :k] = permute_rows(temp_P_i, L[k:, :k])
+        A[k:, k:] = permute_rows(temp_P_i, A[k:, k:])
         U[k:k+r, k+r:] = row_substitution(L[k:k+r, k:k+r], A[k:k+r, k+r:])
         A[k+r:, k+r:] -= np.dot(L[k+r:, k:k+r], U[k:k+r, k+r:])
     return P_to_Pmatrix(P), L, U

@@ -5,7 +5,7 @@ import numpy as np
 def is_pos_def(A):
     return all(np.linalg.eigvals(A) > 0)
 
-
+"""
 def cholesky2(A):
     # if is_pos_def(A):
     A = np.array(A)
@@ -22,9 +22,37 @@ def cholesky2(A):
     return L
     # else:
     #    raise ValueError('Matrix is not positive definite')
-
+"""
 
 def cholesky(A):
+    A = A.astype(np.float64)
+    # if not is_pos_def(A):
+    #    raise ValueError('Matrix is not positive definite')
+    # else:
+    m, n = A.shape
+    U = np.zeros((m, m))
+    for k in range(m):
+        pivot = np.math.sqrt(A[k, k])
+        U[k, k] = pivot
+        U[k, k+1:] = A[k, k+1:] / pivot
+        A[k+1:, k+1:] -= U[k, k+1:] * U[k, k+1:, np.newaxis]
+    return U
+
+
+def cholesky2(A):
+    U = A.astype(np.float64)
+    # if not is_pos_def(A):
+    #    raise ValueError('Matrix is not positive definite')
+    # else:
+    m, n = A.shape
+    for k in range(m):
+        U[k, k] = np.math.sqrt(U[k, k])
+        U[k, k+1:] = U[k, k+1:] / U[k, k]
+        U[k+1:, k+1:] -= U[k, k+1:] * U[k, k+1:, np.newaxis]
+    return U
+
+
+def cholesky3(A):
     A = A.astype(np.float64)
     # if not is_pos_def(A):
     #    raise ValueError('Matrix is not positive definite')
