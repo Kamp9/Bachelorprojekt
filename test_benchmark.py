@@ -44,8 +44,8 @@ np.fill_diagonal(a_sym, b)
 # cProfile.run('cholesky.cholesky(a_sym)')
 # cProfile.run('cholesky.cholesky2(a_sym)')
 
-cProfile.run('sp.lu(rand_matrix)')
-cProfile.run('lu_arbitrary2.lu_partial_block2(rand_matrix, 68)')
+# cProfile.run('sp.lu(rand_matrix)')
+# cProfile.run('lu_arbitrary2.lu_partial_block2(rand_matrix, 68)')
 
 
 def lal():
@@ -81,7 +81,8 @@ def find_best_blocksize():
         print 'best time: ' + str(best_time)
         print 'best blocksize : ' + str(best_block)
         print
-#find_best_blocksize()
+
+find_best_blocksize()
 
 """
 116: 68 er bedst med 12.787971 for 2000 x 2000
