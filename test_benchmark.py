@@ -10,7 +10,7 @@ import lu_arbitrary2
 import time
 np.set_printoptions(linewidth=200)
 
-rand_matrix = np.random.rand(2000, 2000)
+rand_matrix = np.random.rand(3000, 3000)
 
 rand_col = np.random.rand(1000, 1)
 
@@ -88,3 +88,6 @@ find_best_blocksize()
 116: 68 er bedst med 12.787971 for 2000 x 2000
 """
 
+"""
+102 på nbi server for 2000 x 2000
+"""
