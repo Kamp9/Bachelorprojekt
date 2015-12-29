@@ -24,6 +24,7 @@ def cholesky2(A):
     #    raise ValueError('Matrix is not positive definite')
 """
 
+
 def cholesky(A):
     A = A.astype(np.float64)
     # if not is_pos_def(A):
@@ -76,6 +77,7 @@ def forward_substitution(U, B):
     for k in range(m):
         x[k] = (B[k] - np.dot(U[k, :k], x[:k])) / U[k, k]
     return x
+
 
 
 def cholesky_block(A, r):

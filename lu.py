@@ -157,6 +157,8 @@ def row_substitution(U, B):
     x = np.zeros((r, n))
     for k in range(m):
         x[k] = (B[k] - np.dot(U[k, :k], x[:k])) / U[k, k]
+        print B[k]
+        print x[k]  # ****************************
     return x
 
 

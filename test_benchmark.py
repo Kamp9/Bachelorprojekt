@@ -89,3 +89,11 @@ find_best_blocksize()
 """
 
 # 102 nbi server for 2000 x 2000
+
+"""
+nbi for 3000 x 3000
+i : 276
+i time: 11.125747
+best time: 8.431243
+best blocksize : 112
+"""

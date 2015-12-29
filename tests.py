@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.linalg as sp
 import lu
+np.set_printoptions(linewidth=200)
 
 
 def generate_pos_dif(n, fr, to):
@@ -67,3 +68,7 @@ def lu_out_of_place(A):
 
 rand_int_matrix = np.random.randint(-1000, 1000, size=(6, 6))
 
+L, U = lu.lu_inplace(rand_int_matrix)
+print L
+print U
+lu.row_substitution(L[:2, :2], rand_int_matrix[:2, 2:])
