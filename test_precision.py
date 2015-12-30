@@ -12,7 +12,7 @@ splal = np.dot(P2, np.dot(L2, U2))
 
 P3, Q3, L3, U3 = lu.lu_complete_pivot(rand_int_matrix)
 
-L4, U4 = lu.lu_inplace(rand_int_matrix)
+L4, U4 = lu.lu_in_place(rand_int_matrix)
 
 inplace = np.dot(L4, U4)
 

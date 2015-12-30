@@ -18,7 +18,7 @@ class TestLinAlg(unittest.TestCase):
 
     def test_lu_block(self):
         rand_int_matrix = np.random.randint(-1000, 1000, size=(1000, 1000))
-        assert_array_almost_equal(lu.lu_inplace(rand_int_matrix)[0], lu.lu_block(rand_int_matrix, 10)[0], decimal=2)
+        assert_array_almost_equal(lu.lu_in_place(rand_int_matrix)[0], lu.lu_block(rand_int_matrix, 10)[0], decimal=2)
 
     def test_lu_block_arbitrary(self):
         rand_int_matrix = np.random.randint(-1000, 1000, size=(1000, 1000))
@@ -37,21 +37,21 @@ class TestLinAlg(unittest.TestCase):
 
     def test_lu_inplace(self):
         rand_int_matrix = np.random.randint(-1000, 1000, size=(1000, 1000))
-        np.array_equal(lu.lu_inplace(rand_int_matrix)[0], lu.lu_inplace_with_dot(rand_int_matrix)[0])
-        np.array_equal(lu.lu_inplace(rand_int_matrix)[1], lu.lu_inplace_with_dot(rand_int_matrix)[1])
+        np.array_equal(lu.lu_in_place(rand_int_matrix)[0], lu.lu_inplace_with_dot(rand_int_matrix)[0])
+        np.array_equal(lu.lu_in_place(rand_int_matrix)[1], lu.lu_inplace_with_dot(rand_int_matrix)[1])
 
     def test_cholesky(self):
         a = np.random.random_integers(-1000, 1000, size=(1000, 1000))
         b = np.random.random_integers(1000000, 100000000, size=(1000, 1))
         a_sym = (a + a.T)/2
         np.fill_diagonal(a_sym, b)
-        assert_array_almost_equal(sp.cholesky(a_sym), cholesky.cholesky(a_sym), decimal=10)
-        np.array_equal(cholesky.cholesky(a_sym), cholesky.cholesky2(a_sym))
-"""
+        assert_array_almost_equal(sp.cholesky(a_sym), cholesky.cholesky_out_of_place(a_sym), decimal=10)
+        np.array_equal(cholesky.cholesky_out_of_place(a_sym), cholesky.cholesky_in_place(a_sym))
+
     def test_cholesky_block(self):
         a_sym = tests.generate_pos_dif(2000, -1000, 1000)
         assert_array_almost_equal(sp.cholesky(a_sym), cholesky.cholesky_block(a_sym, 100), decimal=10)
-
+"""
     def test_lu_for_floats(self):
         rand_matrix = np.random.rand(1000, 1000)
         rand_col = np.random.rand(1000, 1)

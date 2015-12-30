@@ -1,24 +1,23 @@
 # coding=utf-8
 import numpy as np
-import scipy.linalg as sp
 
 
-def lu_inplace(A):
+def lu_in_place(A):
     m, n = A.shape
-    A = A.astype(np.float64)
+    U = A.astype(np.float64)
     for k in range(m-1):
-        A[k+1:, k] = (1.0 / A[k, k]) * A[k+1:, k]  # division med 0 er muligt
-        A[k+1:, k+1:] -= A[k+1:, k, np.newaxis] * A[k, k+1:]
-    L = np.tril(A)
+        U[k+1:, k] = U[k+1:, k] / U[k, k]
+        U[k+1:, k+1:] -= U[k+1:, k, np.newaxis] * U[k, k+1:]
+    L = np.tril(U)
     np.fill_diagonal(L, 1)
-    return L, np.triu(A)
+    return L, np.triu(U)
 
 
 def lu_inplace_with_dot(A):
     m, n = A.shape
     A = A.astype(np.float64)
     for k in range(m-1):
-        A[k+1:, k] = (1.0 / A[k, k]) * A[k+1:, k]
+        A[k+1:, k] = A[k+1:, k] / A[k, k]
         A[k+1:, k+1:] -= np.dot(A[k+1:, k, np.newaxis], A[np.newaxis, k, k+1:])
     L = np.tril(A)
     np.fill_diagonal(L, 1)
@@ -32,12 +31,12 @@ def lu_out_of_place(A):
     L = np.identity(m)
     for k in range(m):
         U[k, k:] = A[k, k:]
-        L[k+1:, k] = (1.0 / A[k, k]) * A[k+1:, k]  # division med 0 er muligt
-        A[k+1:, k+1:] = A[k+1:, k+1:] - L[k+1:, k, np.newaxis] * U[k, k+1:]
+        L[k+1:, k] = A[k+1:, k] / A[k, k]
+        A[k+1:, k+1:] -= L[k+1:, k, np.newaxis] * U[k, k+1:]
     return L, U
 
 
-def _find_pivot(A, pivoting):
+def find_pivot(A, pivoting):
     A = np.abs(A)
 
     # partial pivoting
@@ -112,7 +111,7 @@ def lu_partial_pivot(A):
     P = np.identity(m)
     L = np.identity(m)
     for k in range(m - 1):
-        pivot = k + _find_pivot(U[k:, k], 0)
+        pivot = k + find_pivot(U[k:, k], 0)
         _permute(P, L, U, m, k, pivot, 0)
         L[k+1:, k] = (1.0 / U[k, k]) * U[k+1:, k]
         U[k+1:, k+1:] -= L[k+1:, k, np.newaxis] * U[k, k+1:]
@@ -126,7 +125,7 @@ def lu_complete_pivot(A):
     Q = np.identity(m)
     L = np.identity(m)
     for k in range(m - 1):
-        x, y = _find_pivot(U[k:, k:], 1)
+        x, y = find_pivot(U[k:, k:], 1)
         x, y = x + k, y + k
         _permute((P, Q), L, U, m, k, (x, y), 1)
         L[k+1:, k] = (1.0 / U[k, k]) * U[k+1:, k]
@@ -141,7 +140,7 @@ def lu_rook_pivot(A):
     Q = np.identity(m)
     L = np.identity(m)
     for k in range(m - 1):
-        x, y = _find_pivot(U[k:, k:], 2)
+        x, y = find_pivot(U[k:, k:], 2)
         x, y = x + k, y + k
         _permute((P, Q), L, U, m, k, (x, y), 1)
         L[k+1:, k] = (1.0 / U[k, k]) * U[k+1:, k]
@@ -149,16 +148,14 @@ def lu_rook_pivot(A):
     return P.transpose(), Q.transpose(), L, np.triu(U)
 
 
-def row_substitution(U, B):
-    m, n = U.shape
+def row_substitution(L, B):
+    m, n = L.shape
     r, n = B.shape
-    U = U.astype(np.float64)
+    L = L.astype(np.float64)
     B = B.astype(np.float64)
     x = np.zeros((r, n))
     for k in range(m):
-        x[k] = (B[k] - np.dot(U[k, :k], x[:k])) / U[k, k]
-        print B[k]
-        print x[k]  # ****************************
+        x[k] = (B[k] - np.dot(L[k, :k], x[:k]))
     return x
 
 
@@ -179,7 +176,7 @@ def lu_block(A, r):
     L = np.zeros((m, m))
     A = A.astype(np.float64)
     for k in range(0, m, r):
-        decomp = lu_inplace(A[k:k+r, k:k+r])
+        decomp = lu_in_place(A[k:k+r, k:k+r])
         L[k:k+r, k:k+r] = decomp[0]
         U[k:k+r, k:k+r] = decomp[1]
         L[k+r:, k:k+r] = col_substitution(U[k:k+r, k:k+r], A[k+r:, k:k+r])

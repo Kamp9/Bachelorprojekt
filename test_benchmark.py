@@ -10,7 +10,7 @@ import lu_arbitrary2
 import time
 np.set_printoptions(linewidth=200)
 
-rand_matrix = np.random.rand(3000, 3000)
+rand_matrix = np.random.rand(2000, 2000)
 
 rand_col = np.random.rand(1000, 1)
 
@@ -44,8 +44,8 @@ np.fill_diagonal(a_sym, b)
 # cProfile.run('cholesky.cholesky(a_sym)')
 # cProfile.run('cholesky.cholesky2(a_sym)')
 
-# cProfile.run('sp.lu(rand_matrix)')
-# cProfile.run('lu_arbitrary2.lu_partial_block2(rand_matrix, 68)')
+cProfile.run('sp.lu(rand_matrix)')
+cProfile.run('lu_arbitrary2.lu_partial_block2(rand_matrix, 132)')
 
 
 def lal():
@@ -64,12 +64,12 @@ def lal2():
 
 def find_best_blocksize():
     t0 = time.clock()
-    lu_arbitrary2.lu_partial_block2(rand_matrix, 1)
+    lu_arbitrary2.lu_partial_block2(rand_matrix, 10)
     best_time = time.clock() - t0
-    best_block = 1
+    best_block = 10
     print best_time
     print
-    for i in range(2, 1001):
+    for i in range(11, 1001):
         t0 = time.clock()
         lu_arbitrary2.lu_partial_block2(rand_matrix, i)
         new_time = time.clock() - t0
@@ -82,7 +82,7 @@ def find_best_blocksize():
         print 'best blocksize : ' + str(best_block)
         print
 
-find_best_blocksize()
+# find_best_blocksize()
 
 """
 116: 68 er bedst med 12.787971 for 2000 x 2000
@@ -96,4 +96,12 @@ i : 276
 i time: 11.125747
 best time: 8.431243
 best blocksize : 112
+"""
+
+"""
+min for 3000 x 3000
+i : 267
+i time: 42.095939
+best time: 39.941715
+best blocksize : 132
 """

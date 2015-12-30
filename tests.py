@@ -65,10 +65,11 @@ def lu_out_of_place(A):
         A[k+1:, k+1:] -= L[k+1:, k, np.newaxis] * U[k, k+1:]
     return L, U
 """
-
+"""
 rand_int_matrix = np.random.randint(-1000, 1000, size=(6, 6))
-
+print rand_int_matrix
 L, U = lu.lu_inplace(rand_int_matrix)
 print L
 print U
-lu.row_substitution(L[:2, :2], rand_int_matrix[:2, 2:])
+lu.row_substitution(L[:3, :3], rand_int_matrix[:3, 3:])
+"""

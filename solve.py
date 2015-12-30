@@ -29,7 +29,7 @@ def back_substitution(U, z):
 
 def solve_cholesky(A, b):
     # virker ikke på grund af at (1.0 / L[k, k]) *  er fjernet.
-    L = cholesky.cholesky(A)
+    L = cholesky.cholesky_out_of_place(A)
     U = L.transpose()
     z = forward_substitution(L, b)
     x = back_substitution(U, z)
@@ -69,7 +69,7 @@ def solve(A, b, pivoting):
 
 def inverse(A):
     (m, n) = A.shape
-    L, U = lu.lu_inplace(A)
+    L, U = lu.lu_in_place(A)
     A_inverse = np.zeros((m, m))
     b = np.identity(m)
     for k in range(m):
