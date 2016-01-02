@@ -39,15 +39,15 @@ def lu_out_of_place(A):
 def find_pivot(A, pivoting):
     A = np.abs(A)
 
-    # partial pivoting
+    # Partial Pivot
     if pivoting == 0:
         return A.argmax()
 
-    # complete pivoting
+    # Complete Pivot
     if pivoting == 1:
         return np.unravel_index(np.argmax(A), A.shape)
 
-    # rook pivoting
+    # Rook Pivot
     if pivoting == 2:
         rowindex = A[:, 0].argmax()
         colmax = A[rowindex, 0]
