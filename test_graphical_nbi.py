@@ -2,9 +2,9 @@
 #import plotly.graph_objs as go
 import time
 import numpy as np
-import cholesky
-import lu
-import tests
+#import cholesky
+#import lu
+#import tests
 import scipy.linalg as sp
 import json
 
@@ -34,10 +34,10 @@ P7, L7, U7 = lu_arbitrary2.lu_partial_block2(A, 42)
 Alu_partial_block = np.dot(P7, np.dot(L7, U7))
 """
 
-with open('workfile', 'w') as f:
 
-    # se int og real matrix
-    def precision_test(minsize, maxsize, step, repeat):
+# se int og real matrix
+def precision_test(minsize, maxsize, step, repeat):
+    with open('workfile', 'w') as f:
         plot_data = []
         for i in range(minsize, maxsize, step):
             test = []
@@ -57,8 +57,8 @@ with open('workfile', 'w') as f:
         json.dump(plot_data, f)
 
 
-
-    def benchmark_test(minsize, maxsize, step, repeat):
+def benchmark_test(minsize, maxsize, step, repeat):
+    with open('workfile', 'w') as f:
         plot_data = []
         for i in range(minsize, maxsize, step):
             test = []
