@@ -47,7 +47,6 @@ def precision_test(minsize, maxsize, step, repeat):
             Asp = np.dot(P, np.dot(L, U))   # change
             dif_matrix = Asp - A
             test += [np.sum(np.abs(dif_matrix))]
-            print i, j
         plot_data += [{
             'y': test,
             'type':'box',
@@ -69,7 +68,6 @@ def benchmark_test(minsize, maxsize, step, repeat):
             time_start = time.clock()
             sp.lu(rand_int_matrix)  # change funktion
             test += [time.clock() - time_start]
-            print i, j
         plot_data += [{
             'y': test,
             'type':'box',
