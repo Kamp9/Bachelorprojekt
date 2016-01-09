@@ -75,13 +75,18 @@ print U
 lu.row_substitution(L[:3, :3], rand_int_matrix[:3, 3:])
 """
 
-lal = np.array([[9, 900, 1],
-                [7, 5, 3],
-                [11, 2, 100]])
+lal = np.array([[11, 12, 13, 14],
+                [21, 22, 23, 24],
+                [31, 32, 33, 34],
+                [41, 42, 43, 44]])
 
 #lal2 = sp.cholesky(lal)
 
-plal = np.array([[0, 0, 1],
-                 [0, 1, 0],
-                 [1, 0, 0]])
+plal = np.array([[0, 0, 1, 0],
+                 [0, 0, 0, 1],
+                 [0, 1, 0, 0],
+                 [1, 0, 0, 0]])
+lalal = np.array([[complex(-1.0, 35.0), complex(-1.0, 35.0)],
+                  [complex(-1.0, 35.0), complex(-1.0, 35.0)]])
 
+print sp.lu(lalal)[1]
