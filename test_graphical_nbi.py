@@ -34,51 +34,48 @@ P7, L7, U7 = lu_arbitrary2.lu_partial_block2(A, 42)
 Alu_partial_block = np.dot(P7, np.dot(L7, U7))
 """
 
-f = open('workfile', 'r+')
+with open('workfile', 'w') as f:
+
+    # se int og real matrix
+    def precision_test(minsize, maxsize, step, repeat):
+        plot_data = []
+        for i in range(minsize, maxsize, step):
+            test = []
+            for j in range(repeat):
+                A = np.random.rand(i, i)        # change
+                P, L, U = sp.lu(A)
+                Asp = np.dot(P, np.dot(L, U))   # change
+                dif_matrix = Asp - A
+                test += [np.sum(np.abs(dif_matrix))]
+            plot_data += [{
+                'y': test,
+                'type':'box',
+                'marker':{'color': 'black'},
+                'name': str(i) + 'x' + str(i),
+                'boxpoints': False
+                }]
+        json.dump(plot_data, f)
 
 
-# se int og real matrix
-def precision_test(minsize, maxsize, step, repeat):
-    plot_data = []
-    for i in range(minsize, maxsize, step):
-        test = []
-        for j in range(repeat):
-            A = np.random.rand(i, i)        # change
-            P, L, U = sp.lu(A)
-            Asp = np.dot(P, np.dot(L, U))   # change
-            dif_matrix = Asp - A
-            test += [np.sum(np.abs(dif_matrix))]
-        plot_data += [{
-            'y': test,
-            'type':'box',
-            'marker':{'color': 'black'},
-            'name': str(i) + 'x' + str(i),
-            'boxpoints': False
-            }]
-    f.write(plot_data)
+
+    def benchmark_test(minsize, maxsize, step, repeat):
+        plot_data = []
+        for i in range(minsize, maxsize, step):
+            test = []
+            for j in range(repeat):
+                rand_int_matrix = np.random.randint(-100000, 100000, size=(i, i))
+                time_start = time.clock()
+                sp.lu(rand_int_matrix)  # change funktion
+                test += [time.clock() - time_start]
+            plot_data += [{
+                'y': test,
+                'type':'box',
+                'marker':{'color': 'black'},
+                'name': str(i) + 'x' + str(i),
+                'boxpoints': False
+                }]
+        json.dump(plot_data, f)
+
 
 #  precision_test(500, 3001, 500, 10)
-
-
-def benchmark_test(minsize, maxsize, step, repeat):
-    plot_data = []
-    for i in range(minsize, maxsize, step):
-        test = []
-        for j in range(repeat):
-            rand_int_matrix = np.random.randint(-100000, 100000, size=(i, i))
-            time_start = time.clock()
-            sp.lu(rand_int_matrix)  # change funktion
-            test += [time.clock() - time_start]
-        plot_data += [{
-            'y': test,
-            'type':'box',
-            'marker':{'color': 'black'},
-            'name': str(i) + 'x' + str(i),
-            'boxpoints': False
-            }]
-    f.write(plot_data)
-
-
 benchmark_test(10, 201, 1, 10)
-
-f.close()
