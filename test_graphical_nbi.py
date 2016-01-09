@@ -34,7 +34,7 @@ Alu_partial_block = np.dot(P7, np.dot(L7, U7))
 """
 
 f = open('workfile', 'r+')
-f.write('0123456789abcdef')
+
 
 # se int og real matrix
 def precision_test(minsize, maxsize, step, repeat):
@@ -55,7 +55,7 @@ def precision_test(minsize, maxsize, step, repeat):
             'name': str(i) + 'x' + str(i),
             'boxpoints': False
             }]
-    print plot_data
+    f.write(plot_data)
 
 #  precision_test(500, 3001, 500, 10)
 
@@ -77,7 +77,9 @@ def benchmark_test(minsize, maxsize, step, repeat):
             'name': str(i) + 'x' + str(i),
             'boxpoints': False
             }]
-    print plot_data
+    f.write(plot_data)
 
 
 benchmark_test(10, 201, 1, 10)
+
+f.close()
