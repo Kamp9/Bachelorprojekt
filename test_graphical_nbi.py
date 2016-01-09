@@ -33,6 +33,8 @@ P7, L7, U7 = lu_arbitrary2.lu_partial_block2(A, 42)
 Alu_partial_block = np.dot(P7, np.dot(L7, U7))
 """
 
+f = open('workfile', 'r+')
+f.write('0123456789abcdef')
 
 # se int og real matrix
 def precision_test(minsize, maxsize, step, repeat):
