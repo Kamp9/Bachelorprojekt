@@ -51,17 +51,17 @@ def precision_test(minsize, maxsize, step, repeat):
             test_my += [np.sum(np.abs(dif_matrix))]
             """
 
+            P, L, U = sp.lu(A)
+            Amy = np.dot(P, np.dot(L, U))
+            dif_matrix = Amy - A
+            test_sp += [np.sum(np.abs(dif_matrix))]
+
+            P2, L2, U2 = lu_square.lu_partial_pivot(A)
+            Amy = np.dot(U2.transpose(), U2)
+            dif_matrix = Amy - A
+            test_my += [np.sum(np.abs(dif_matrix))/np.sum(np.abs(A))]
+
             """
-            U2 = sp.cholesky(pos_def)
-            Amy = np.dot(U2.transpose(), U2)
-            dif_matrix = Amy - pos_def
-            print np.sum(np.abs(dif_matrix))
-
-            U2 = cholesky.cholesky_block(pos_def, 92)
-            Amy = np.dot(U2.transpose(), U2)
-            dif_matrix = Amy - pos_def
-            print np.sum(np.abs(dif_matrix))
-
             U2 = cholesky.cholesky_out_of_place(pos_def)
             Amy = np.dot(U2.transpose(), U2)
             dif_matrix = Amy - pos_def
