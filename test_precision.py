@@ -2,7 +2,7 @@ import scipy.linalg as sp
 import numpy as np
 import lu_arbitrary
 import lu_arbitrary2
-import lu
+import lu_square
 import cholesky
 
 A = np.random.rand(1500, 1500)
@@ -10,19 +10,19 @@ A = np.random.rand(1500, 1500)
 P, L, U = sp.lu(A)
 Asp = np.dot(P, np.dot(L, U))
 
-L2, U2 = lu.lu_in_place(A)
+L2, U2 = lu_square.lu_in_place(A)
 Alu = np.dot(L2, U2)
 
-P3, L3, U3 = lu.lu_partial_pivot(A)
+P3, L3, U3 = lu_square.lu_partial_pivot(A)
 Alu_partial = np.dot(P3, np.dot(L3, U3))
 
-P4, Q4, L4, U4 = lu.lu_complete_pivot(A)
+P4, Q4, L4, U4 = lu_square.lu_complete_pivot(A)
 Alu_complete = np.dot(np.dot(P4, np.dot(L4, U4)), Q4)
 
-P5, Q5, L5, U5 = lu.lu_rook_pivot(A)
+P5, Q5, L5, U5 = lu_square.lu_rook_pivot(A)
 Alu_rook = np.dot(np.dot(P5, np.dot(L5, U5)), Q5)
 
-L6, U6 = lu.lu_block(A, 42)
+L6, U6 = lu_square.lu_block(A, 42)
 Alu_block = np.dot(L6, U6)
 
 P7, L7, U7 = lu_arbitrary2.lu_partial_block2(A, 42)

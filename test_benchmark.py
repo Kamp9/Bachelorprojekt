@@ -2,7 +2,7 @@ import cProfile
 import numpy as np
 import scipy.linalg as sp
 import cholesky
-import lu
+import lu_square
 import lu_decomposition2
 import solve
 import lu_arbitrary

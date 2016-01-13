@@ -4,7 +4,7 @@ import lu_arbitrary2
 from memory_profiler import profile
 
 
-@profile
+#@profile
 def cholesky(A):
     A = A.astype(np.float64)
     m, n = A.shape
@@ -17,7 +17,7 @@ def cholesky(A):
     return U
 
 
-@profile
+#@profile
 def cholesky_in_place(A):
     U = A.astype(np.float64)
     m, n = A.shape
@@ -28,7 +28,7 @@ def cholesky_in_place(A):
     return np.triu(U)
 
 
-@profile
+#@profile
 def lu_partial_block2(A, r):
     m, n = A.shape
     A = A.astype(np.float64)
@@ -54,8 +54,15 @@ a_sym = (a + a.T)/2
 np.fill_diagonal(a_sym, b)
 
 cholesky(a_sym)
-cholesky_in_place(a_sym)
+#cholesky_in_place(a_sym)
 
 # sp.cholesky(a_sym)
 
 #lu_partial_block2(a, 42)
+
+"""
+chmod a+x ./myapp.py
+perf stat ./myapp.py
+
+"""
+

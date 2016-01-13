@@ -11,9 +11,9 @@ def cholesky_out_of_place(A):
     m, n = A.shape
     U = np.zeros((m, m))
     for k in range(m):
-        U[k, k] = np.math.sqrt(A[k, k])
+        U[k, k] = np.sqrt(A[k, k])
         U[k, k+1:] = A[k, k+1:] / U[k, k]
-        A[k+1:, k+1:] -= U[k, k+1:] * U[k, k+1:, np.newaxis]
+        A[k+1:, k+1:] -= U[k, k+1:, np.newaxis] * U[k, k+1:]
     return U
 
 

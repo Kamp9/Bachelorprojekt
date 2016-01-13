@@ -1,8 +1,8 @@
 # coding=utf-8
 import numpy as np
-import lu
+import lu_square
 import cholesky
-
+import lu_arbitrary2
 
 def forward_substitution(L, b):
     m, n = L.shape
@@ -37,44 +37,97 @@ def solve_cholesky(A, b):
 
 
 def solve(A, b, pivoting):
-    # Skal gerne returnere sammen dimentioner som b, hvis den skal være ligesom scipy
     # No pivoting
     if pivoting == 0:
-        L, U = lu.lu_out_of_place(A)
+        L, U = lu_square.lu_out_of_place(A)
         z = forward_substitution(L, b)
         x = back_substitution(U, z)
         return x
 
     # Partial pivoting
     if pivoting == 1:
-        P, L, U = lu.lu_partial_pivot(A)
+        P, L, U = lu_square.lu_partial_pivot(A)
         z = forward_substitution(L, np.dot(P.transpose(), b))
         x = back_substitution(U, z)
         return x
 
     # Complete pivoting
     if pivoting == 2:
-        P, Q, L, U = lu.lu_complete_pivot(A)
+        P, Q, L, U = lu_square.lu_complete_pivot(A)
         z = forward_substitution(L, np.dot(P.transpose(), b))
         x = np.dot(Q.transpose(), back_substitution(U, z))
         return x
 
     # Rook pivoting
     if pivoting == 3:
-        P, Q, L, U = lu.lu_rook_pivot(A)
+        P, Q, L, U = lu_square.lu_rook_pivot(A)
         z = forward_substitution(L, np.dot(P.transpose(), b))
         x = np.dot(Q.transpose(), back_substitution(U, z))
         return x
 
+    # Blok PP
+    if pivoting == 4:
+        P, L, U = lu_arbitrary2.lu_partial_block2(A, 92)
+        z = forward_substitution(L, np.dot(P.transpose(), b))
+        x = back_substitution(U, z)
+        return x
 
-def inverse(A):
+
+def inverse(A, pivoting):
     (m, n) = A.shape
-    L, U = lu.lu_in_place(A)
+    A_inverse = np.zeros((m, m))
+    b = np.identity(m)
+
+    # No pivot strategy
+    if pivoting == 0:
+        for k in range(m):
+            L, U = lu_square.lu_in_place(A)
+            z = forward_substitution(L, b[:, k])
+            x = back_substitution(U, z)
+            A_inverse[:, k, np.newaxis] = x
+        return A_inverse
+
+    # Partial pivot
+    if pivoting == 1:
+        P, L, U = lu_square.lu_partial_pivot(A)
+        for k in range(m):
+            z = forward_substitution(L, np.dot(P.transpose(), b[:, k]))
+            x = back_substitution(U, z)
+            A_inverse[:, k, np.newaxis] = x
+        return A_inverse
+
+    # Complete pivot
+    if pivoting == 2:
+        P, Q, L, U = lu_square.lu_complete_pivot(A)
+        for k in range(m):
+            z = forward_substitution(L, np.dot(P.transpose(), b[:, k]))
+            x = np.dot(Q.transpose(), back_substitution(U, z))
+            A_inverse[:, k, np.newaxis] = x
+        return A_inverse
+
+
+def inverse2(A):
+    (m, n) = A.shape
+    P, L, U = lu_square.lu_partial_pivot(A)
     A_inverse = np.zeros((m, m))
     b = np.identity(m)
     for k in range(m):
-        z = forward_substitution(L, b[:, k])
+        z = forward_substitution(L, np.dot(P.transpose(), b[:, k]))
         x = back_substitution(U, z)
         A_inverse[:, k, np.newaxis] = x
     return A_inverse
 
+
+def inverse3(A):
+    (m, n) = A.shape
+    P, Q, L, U = lu_square.lu_complete_pivot(A)
+    A_inverse = np.zeros((m, m))
+    b = np.identity(m)
+    for k in range(m):
+        z = forward_substitution(L, np.dot(P.transpose(), b[:, k]))
+        x = np.dot(Q.transpose(), back_substitution(U, z))
+        A_inverse[:, k, np.newaxis] = x
+    return A_inverse
+
+#   z = forward_substitution(L, np.dot(P.transpose(), b))
+#   x = np.dot(Q.transpose(), back_substitution(U, z))

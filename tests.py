@@ -1,13 +1,13 @@
 import numpy as np
 import scipy.linalg as sp
-import lu
+import lu_square
 import cholesky
 import lu_arbitrary2
 np.set_printoptions(linewidth=200)
 
 def generate_pos_dif(n, fr, to):
     a = np.random.random_integers(fr, to, size=(n, n))
-    b = np.random.random_integers(to * 10, to * 1000, size=(n, 1))
+    b = np.random.random_integers(to * 10, to * 100, size=(n, 1))
     pos_dif = (a + a.T)/2
     np.fill_diagonal(pos_dif, b)
     return pos_dif
@@ -75,18 +75,49 @@ print U
 lu.row_substitution(L[:3, :3], rand_int_matrix[:3, 3:])
 """
 
-lal = np.array([[11, 12, 13, 14],
+lal = np.array([[31, 32, 33, 34],
+                [41, 42, 43, 44],
                 [21, 22, 23, 24],
-                [31, 32, 33, 34],
-                [41, 42, 43, 44]])
+                [11, 12, 13, 14]])
 
 #lal2 = sp.cholesky(lal)
 
-plal = np.array([[0, 0, 1, 0],
-                 [0, 0, 0, 1],
+plal = np.array([[0, 0, 0, 1],
+                 [0, 0, 1, 0],
+                 [1, 0, 0, 0],
+                 [0, 1, 0, 0]])
+
+qlal = np.array([[0, 0, 0, 1],
+                 [1, 0, 0, 0],
                  [0, 1, 0, 0],
-                 [1, 0, 0, 0]])
+                 [0, 0, 1, 0]])
+
+print np.dot(plal, lal)
+
+
 lalal = np.array([[complex(-1.0, 35.0), complex(-1.0, 35.0)],
                   [complex(-1.0, 35.0), complex(-1.0, 35.0)]])
 
-print sp.lu(lalal)[1]
+
+"""
+P, L, U = sp.lu(A)
+Asp = np.dot(P, np.dot(L, U))
+
+L2, U2 = lu.lu_in_place(A)
+Alu = np.dot(L2, U2)
+
+P3, L3, U3 = lu.lu_partial_pivot(A)
+Alu_partial = np.dot(P3, np.dot(L3, U3))
+
+P4, Q4, L4, U4 = lu.lu_complete_pivot(A)
+Alu_complete = np.dot(np.dot(P4, np.dot(L4, U4)), Q4)
+
+P5, Q5, L5, U5 = lu.lu_rook_pivot(A)
+Alu_rook = np.dot(np.dot(P5, np.dot(L5, U5)), Q5)
+
+L6, U6 = lu.lu_block(A, 42)
+Alu_block = np.dot(L6, U6)
+
+P7, L7, U7 = lu_arbitrary2.lu_partial_block2(A, 42)
+Alu_partial_block = np.dot(P7, np.dot(L7, U7))
+"""

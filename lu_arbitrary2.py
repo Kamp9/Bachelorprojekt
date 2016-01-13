@@ -1,7 +1,7 @@
 # coding=utf-8
 import numpy as np
 import scipy.linalg as sp
-import lu
+import lu_square
 np.set_printoptions(linewidth=200)
 
 
@@ -21,7 +21,7 @@ def row_substitution(L, B):
     r, n = B.shape
     x = np.zeros((r, n))
     for k in range(m):
-        x[k] = (B[k] - np.dot(L[k, :k], x[:k])) # / L[k, k]  # / L[k, k] burde kunne fjernes
+        x[k] = (B[k] - np.dot(L[k, :k], x[:k]))
     return x
 
 
@@ -160,9 +160,3 @@ def lu_partial_block2(A, r):
         U[k:k+r, k+r:] = row_substitution(L[k:k+r, k:k+r], A[k:k+r, k+r:])
         A[k+r:, k+r:] -= np.dot(L[k+r:, k:k+r], U[k:k+r, k+r:])
     return P_to_Pmatrix(P), L, U
-
-
-def lu_partial_block3(A, r):
-    m, n = A.shape
-    A = A.astype(np.float64)
-    P = range(m)
