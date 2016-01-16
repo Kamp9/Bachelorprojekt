@@ -183,13 +183,3 @@ def lu_block(A, r):
         U[k:k+r, k+r:] = row_substitution(L[k:k+r, k:k+r], A[k:k+r, k+r:])
         A[k+r:, k+r:] -= np.dot(L[k+r:, k:k+r], U[k:k+r, k+r:])
     return L, U
-
-
-matrix = np.array([[-874, -965, 18, -71],
-                   [230, -457, -817, -508],
-                   [570, -781, -109, -751],
-                   [-4, -497, -630, 230]])
-
-#print sp.lu(matrix)[2]
-
-#print lu_block(matrix, 2)[1]

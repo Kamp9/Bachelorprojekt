@@ -1,7 +1,7 @@
 import scipy.linalg as sp
 import numpy as np
-import lu_arbitrary
-import lu_arbitrary2
+import lu_block_slow
+import lu_block
 import lu_square
 import cholesky
 
@@ -25,7 +25,7 @@ Alu_rook = np.dot(np.dot(P5, np.dot(L5, U5)), Q5)
 L6, U6 = lu_square.lu_block(A, 42)
 Alu_block = np.dot(L6, U6)
 
-P7, L7, U7 = lu_arbitrary2.lu_partial_block2(A, 42)
+P7, L7, U7 = lu_block.lu_partial_block(A, 42)
 Alu_partial_block = np.dot(P7, np.dot(L7, U7))
 
 

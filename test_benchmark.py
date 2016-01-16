@@ -4,9 +4,9 @@ import scipy.linalg as sp
 import cholesky
 import lu_square
 import lu_decomposition2
-import solve
-import lu_arbitrary
-import lu_arbitrary2
+import solve_and_invese
+import lu_block_slow
+import lu_block
 import time
 np.set_printoptions(linewidth=200)
 
@@ -64,14 +64,14 @@ def lal2():
 
 def find_best_blocksize():
     t0 = time.clock()
-    lu_arbitrary2.lu_partial_block2(rand_matrix, 10)
+    lu_block.lu_partial_block(rand_matrix, 10)
     best_time = time.clock() - t0
     best_block = 10
     print best_time
     print
     for i in range(11, 1001):
         t0 = time.clock()
-        lu_arbitrary2.lu_partial_block2(rand_matrix, i)
+        lu_block.lu_partial_block(rand_matrix, i)
         new_time = time.clock() - t0
         if new_time < best_time:
             best_time = new_time

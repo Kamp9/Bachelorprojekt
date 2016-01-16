@@ -2,7 +2,8 @@
 import numpy as np
 import lu_square
 import cholesky
-import lu_arbitrary2
+import lu_block
+
 
 def forward_substitution(L, b):
     m, n = L.shape
@@ -13,12 +14,6 @@ def forward_substitution(L, b):
 
 
 def back_substitution(U, z):
-    """
-    Burde laves uden l-k men bare med omvendt range(m)
-    :param U:
-    :param z:
-    :return:
-    """
     m, n = U.shape
     l = m - 1
     x = np.zeros(m)
@@ -67,13 +62,21 @@ def solve(A, b, pivoting):
 
     # Blok PP
     if pivoting == 4:
-        P, L, U = lu_arbitrary2.lu_partial_block2(A, 92)
+        P, L, U = lu_block.lu_partial_block(A, 92)
         z = forward_substitution(L, np.dot(P.transpose(), b))
         x = back_substitution(U, z)
         return x
 
 
 def inverse(A, pivoting):
+    # FIX og brug solve!
+    # FIX og brug solve!
+    # FIX og brug solve!
+    # FIX og brug solve!
+    # FIX og brug solve!
+    # FIX og brug solve!
+    # FIX og brug solve!
+
     (m, n) = A.shape
     A_inverse = np.zeros((m, m))
     b = np.identity(m)
@@ -128,6 +131,3 @@ def inverse3(A):
         x = np.dot(Q.transpose(), back_substitution(U, z))
         A_inverse[:, k, np.newaxis] = x
     return A_inverse
-
-#   z = forward_substitution(L, np.dot(P.transpose(), b))
-#   x = np.dot(Q.transpose(), back_substitution(U, z))

@@ -142,7 +142,7 @@ def lu_partial(A):
     return P, L, np.triu(U[:n, :n])
 
 
-def lu_partial_block2(A, r):
+def lu_partial_block(A, r):
     m, n = A.shape
     A = A.astype(np.float64)
     P = range(m)

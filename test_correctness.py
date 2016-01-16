@@ -3,18 +3,18 @@ import numpy as np
 import scipy.linalg as sp
 import cholesky
 import lu_square
-import solve
+import solve_and_invese
 import unittest
 import tests
-import lu_arbitrary
-import lu_arbitrary2
+import lu_block_slow
+import lu_block
 
 
 class TestLinAlg(unittest.TestCase):
     def test_lu_arbitrary(self):
         a_sym = tests.generate_pos_dif(1000, -1000, 1000)
-        assert_array_almost_equal(lu_arbitrary.lu_block(a_sym, 42)[0], sp.lu(a_sym)[1], decimal=12)
-        assert_array_almost_equal(lu_arbitrary.lu_block(a_sym, 42)[1], sp.lu(a_sym)[2], decimal=8)
+        assert_array_almost_equal(lu_block_slow.lu_block(a_sym, 42)[0], sp.lu(a_sym)[1], decimal=12)
+        assert_array_almost_equal(lu_block_slow.lu_block(a_sym, 42)[1], sp.lu(a_sym)[2], decimal=8)
 
     def test_lu_block(self):
         rand_int_matrix = np.random.randint(-1000, 1000, size=(1000, 1000))
@@ -22,14 +22,14 @@ class TestLinAlg(unittest.TestCase):
 
     def test_lu_block_arbitrary(self):
         rand_int_matrix = np.random.randint(-1000, 1000, size=(1000, 1000))
-        assert_array_almost_equal(lu_arbitrary.lu_partial(rand_int_matrix)[1], sp.lu(rand_int_matrix)[1], decimal=12)
-        assert_array_almost_equal(lu_arbitrary.lu_partial(rand_int_matrix)[2], sp.lu(rand_int_matrix)[2], decimal=8)
+        assert_array_almost_equal(lu_block_slow.lu_partial(rand_int_matrix)[1], sp.lu(rand_int_matrix)[1], decimal=12)
+        assert_array_almost_equal(lu_block_slow.lu_partial(rand_int_matrix)[2], sp.lu(rand_int_matrix)[2], decimal=8)
 
     def test_lu_block_arbitrary2(self):
         rand_int_matrix = np.random.randint(-1000, 1000, size=(1000, 1000))
-        assert_array_almost_equal(lu_arbitrary2.lu_partial_block2(rand_int_matrix, 22)[0], sp.lu(rand_int_matrix)[0], decimal=20)
-        assert_array_almost_equal(lu_arbitrary2.lu_partial_block2(rand_int_matrix, 22)[1], sp.lu(rand_int_matrix)[1], decimal=12)
-        assert_array_almost_equal(lu_arbitrary2.lu_partial_block2(rand_int_matrix, 22)[2], sp.lu(rand_int_matrix)[2], decimal=8)
+        assert_array_almost_equal(lu_block.lu_partial_block(rand_int_matrix, 22)[0], sp.lu(rand_int_matrix)[0], decimal=20)
+        assert_array_almost_equal(lu_block.lu_partial_block(rand_int_matrix, 22)[1], sp.lu(rand_int_matrix)[1], decimal=12)
+        assert_array_almost_equal(lu_block.lu_partial_block(rand_int_matrix, 22)[2], sp.lu(rand_int_matrix)[2], decimal=8)
 
     def test_lu_partial(self):
         rand_int_matrix = np.random.randint(-1000, 1000, size=(1000, 1000))
@@ -57,7 +57,7 @@ class TestLinAlg(unittest.TestCase):
         rand_int_col = np.random.randint(-1000, 1000, size=(1000, 1))
         sp_solve = sp.solve(rand_int_matrix, rand_int_col)
 
-        assert_array_almost_equal(sp_solve, solve.solve(rand_int_matrix, rand_int_col, 2), decimal=11)
+        assert_array_almost_equal(sp_solve, solve_and_invese.solve(rand_int_matrix, rand_int_col, 2), decimal=11)
     """
     def test_lu_for_ints(self):
         rand_int_matrix = np.random.randint(-1000, 1000, size=(1000, 1000))

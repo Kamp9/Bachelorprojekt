@@ -2,10 +2,13 @@
 import numpy as np
 
 
+# Checks if a given matrix is positive-definite.
 def is_pos_def(A):
     return all(np.linalg.eigvals(A) > 0)
 
 
+# Returns the Cholesky decomposition U for A=UtU of a positive-definite matrix A.
+# Using the two matrices A and U, where astype(np.float64) copies the matrix A
 def cholesky_out_of_place(A):
     A = A.astype(np.float64)
     m, n = A.shape
@@ -17,6 +20,8 @@ def cholesky_out_of_place(A):
     return U
 
 
+# Returns the Cholesky decomposition U for A=UtU of a positive-definite matrix A.
+# Using only one matrix U, where astype(np.float64) copies the matrix A
 def cholesky_in_place(A):
     U = A.astype(np.float64)
     m, n = A.shape
@@ -36,6 +41,8 @@ def forward_block_substitution(U, B):
     return x
 
 
+# Returns the Cholesky decomposition U for A=UtU of a positive-definite matrix A.
+# Using a block algorithem to minimize cache misses.
 def cholesky_block(A, r):
     m, n = A.shape
     U = np.zeros((m, m))
