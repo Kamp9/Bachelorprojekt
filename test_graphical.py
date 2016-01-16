@@ -6,7 +6,7 @@ import cholesky
 import tests
 import lu_block
 import scipy.linalg as sp
-import lu_square
+import lu_
 import tests
 import solve_and_invese
 py.sign_in('kamp9', '09g4enb2lz')
@@ -194,11 +194,11 @@ def benchmark_test(minsize, maxsize, step, repeat):
             rand_int_matrix = tests.generate_pos_dif(i, 1000, 100000)
 
             time_start = time.clock()
-            lu_square.lu_out_of_place(rand_int_matrix)
+            lu_.lu_out_of_place(rand_int_matrix)
             test_my += [time.clock() - time_start]
 
             time_start = time.clock()
-            lu_square.lu_in_place(rand_int_matrix)
+            lu_.lu_in_place(rand_int_matrix)
             test_sp += [time.clock() - time_start]
 
             print i, j

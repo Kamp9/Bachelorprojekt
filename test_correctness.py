@@ -2,7 +2,7 @@ from numpy.testing import TestCase, assert_array_almost_equal
 import numpy as np
 import scipy.linalg as sp
 import cholesky
-import lu_square
+import lu_
 import solve_and_invese
 import unittest
 import tests
@@ -18,7 +18,7 @@ class TestLinAlg(unittest.TestCase):
 
     def test_lu_block(self):
         rand_int_matrix = np.random.randint(-1000, 1000, size=(1000, 1000))
-        assert_array_almost_equal(lu_square.lu_in_place(rand_int_matrix)[0], lu_square.lu_block(rand_int_matrix, 10)[0], decimal=2)
+        assert_array_almost_equal(lu_.lu_in_place(rand_int_matrix)[0], lu_.lu_block(rand_int_matrix, 10)[0], decimal=2)
 
     def test_lu_block_arbitrary(self):
         rand_int_matrix = np.random.randint(-1000, 1000, size=(1000, 1000))
@@ -33,12 +33,12 @@ class TestLinAlg(unittest.TestCase):
 
     def test_lu_partial(self):
         rand_int_matrix = np.random.randint(-1000, 1000, size=(1000, 1000))
-        np.array_equal(lu_square.lu_partial_pivot(rand_int_matrix)[0].transpose(), sp.lu(rand_int_matrix)[0])
+        np.array_equal(lu_.lu_partial_pivot(rand_int_matrix)[0].transpose(), sp.lu(rand_int_matrix)[0])
 
     def test_lu_inplace(self):
         rand_int_matrix = np.random.randint(-1000, 1000, size=(1000, 1000))
-        np.array_equal(lu_square.lu_in_place(rand_int_matrix)[0], lu_square.lu_inplace_with_dot(rand_int_matrix)[0])
-        np.array_equal(lu_square.lu_in_place(rand_int_matrix)[1], lu_square.lu_inplace_with_dot(rand_int_matrix)[1])
+        np.array_equal(lu_.lu_in_place(rand_int_matrix)[0], lu_.lu_inplace_with_dot(rand_int_matrix)[0])
+        np.array_equal(lu_.lu_in_place(rand_int_matrix)[1], lu_.lu_inplace_with_dot(rand_int_matrix)[1])
 
     def test_cholesky(self):
         a = np.random.random_integers(-1000, 1000, size=(1000, 1000))

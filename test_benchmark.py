@@ -2,7 +2,7 @@ import cProfile
 import numpy as np
 import scipy.linalg as sp
 import cholesky
-import lu_square
+import lu_
 import lu_decomposition2
 import solve_and_invese
 import lu_block_slow
