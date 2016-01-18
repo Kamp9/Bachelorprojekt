@@ -1,13 +1,12 @@
 import plotly.plotly as py
 import plotly.graph_objs as go
-import time
+import scipy.linalg as sp
 import numpy as np
+import time
 import cholesky
 import tests
 import lu_block
-import scipy.linalg as sp
 import lu
-import tests
 import solve
 py.sign_in('kamp9', '09g4enb2lz')
 
@@ -224,7 +223,7 @@ def benchmark_test(minsize, maxsize, step, repeat):
         for j in range(repeat):
             # pos_def = tests.generate_pos_dif(i, 1, 1000)
             A = np.random.randint(-1000, 1000, size=(i, i))   # change
-           # Ab = np.random.randint(-1000, 1000, size=(i, 1))  # change
+            # Ab = np.random.randint(-1000, 1000, size=(i, 1))  # change
 
             time_start = time.clock()
             sp.lu(A)
@@ -310,18 +309,18 @@ def benchmark_test(minsize, maxsize, step, repeat):
             #     'marker':{'color': 'blue'},
             #     'name': str(i) + 'x' + str(i),
             #     'boxpoints': False
-            # #     }]
+            #     }]
             #
             # y_sp += [np.sum(test_sp) / len(test_sp)]
             # y_block += [np.sum(test_block) / len(test_block)]
-            # # y_no += [np.sum(test_no) / len(test_no)]
+            # y_no += [np.sum(test_no) / len(test_no)]
 
     # print np.polyfit(range(len(y_sp)), y_sp, 1, full=True)
     # print np.polyfit(range(len(y_sp)), y_sp, 2, full=True)
     # print np.polyfit(range(len(y_block)), y_block, 1, full=True)
     # print np.polyfit(range(len(y_block)), y_block, 2, full=True)
-    # # # print np.polyfit(range(len(y_no)), y_no, 1, full=True)
-    # # # print np.polyfit(range(len(y_no)), y_no, 2, full=True)
+    # print np.polyfit(range(len(y_no)), y_no, 1, full=True)
+    # print np.polyfit(range(len(y_no)), y_no, 2, full=True)
 
 
     url = py.plot(plot_data, filename='Benchmark')
@@ -331,8 +330,8 @@ benchmark_test(200, 2001, 200, 4)
 
 def block_test(minsize, maxsize, step, repeat):
     plot_data = []
-    #rand_matrix = np.random.rand(500, 500)  # change
-    #pos_def = tests.generate_pos_dif(1000, 1000, 1000000)
+    # rand_matrix = np.random.rand(500, 500)  # change
+    # pos_def = tests.generate_pos_dif(1000, 1000, 1000000)
     rand_int_matrix = np.random.randint(-1000, 1000, size=(1500, 1500))
     for i in xrange(minsize, maxsize, step):
         test = []
