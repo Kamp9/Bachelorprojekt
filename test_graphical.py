@@ -6,9 +6,9 @@ import cholesky
 import tests
 import lu_block
 import scipy.linalg as sp
-import lu_
+import lu
 import tests
-import solve_and_invese
+import solve
 py.sign_in('kamp9', '09g4enb2lz')
 
 
@@ -20,7 +20,6 @@ def norm_1(A, newA):
 def norm_2(A, newA):
     dif_sq = np.square(A - newA)
     return np.sqrt(np.sum(dif_sq))/np.sqrt(np.sum(np.square(A)))
-
 
 
 def precision_test(minsize, maxsize, step, repeat):
@@ -41,9 +40,9 @@ def precision_test(minsize, maxsize, step, repeat):
         for j in range(repeat):
             # A = np.random.rand(i, i)
             # Ab = np.random.rand(i, 1)
-            # pos_def = tests.generate_pos_dif(1000, 1, 1000)
+            # pos_def = tests.generate_pos_dif(i, 1, 1000)
             A = np.random.randint(-1000, 1000, size=(i, i))   # change
-            Ab = np.random.randint(-1000, 1000, size=(i, 1))  # change
+           # Ab = np.random.randint(-1000, 1000, size=(i, 1))  # change
 
             # x = sp.solve(A, Ab)
             # Anew = np.dot(A, x)
@@ -63,30 +62,54 @@ def precision_test(minsize, maxsize, step, repeat):
             # dif_matrix = Asp - np.identity(Asp.shape[0])
             # test_my += [np.sum(np.abs(dif_matrix))]
 
-            x = sp.solve(A, Ab)
-            Amy = np.dot(A, x)
-            test_sp += [norm_2(Ab, Amy)]
-
-            # x = solve.solve(A, Ab, 1)
+            # x = sp.inv(A)
             # Amy = np.dot(A, x)
-            # test_partial += [norm_2(Ab, Amy)]
-
-            # x = solve.solve(A, Ab, 2)
+            # test_sp += [norm_2(np.identity(i), Amy)]
+            #
+            # # x = lu.lu_partial_pivot(A, Ab, 1)
+            # # Amy = np.dot(A, x)
+            # # test_partial += [norm_2(Ab, Amy)]
+            #
+            # x = solve.inverse(A, 4)
             # Amy = np.dot(A, x)
-            # test_complete += [norm_2(Ab, Amy)]
+            # test_block += [norm_2(np.identity(i), Amy)]
 
+            #
             # x = solve.solve(A, Ab, 3)
             # Amy = np.dot(A, x)
             # test_rook += [norm_2(Ab, Amy)]
             #
-            x = solve_and_invese.solve(A, Ab, 4)
-            Amy = np.dot(A, x)
-            test_block += [norm_2(Ab, Amy)]
+            # x = solve.solve(A, Ab, 4)
+            # Amy = np.dot(A, x)
+            # test_block += [norm_2(Ab, Amy)]
 
-            # U2 = cholesky.cholesky_out_of_place(pos_def)
-            # Amy = np.dot(U2.transpose(), U2)
-            # dif_matrix = Amy - pos_def
-            # print np.sum(np.abs(dif_matrix))
+            P, L, U = sp.lu(A)
+            Amy = np.dot(P, np.dot(L, U))
+            test_sp += [norm_1(A, Amy)]
+
+            P, L, U = lu.lu_partial_pivot(A)
+            Amy = np.dot(P, np.dot(L, U))
+            test_partial += [norm_1(A, Amy)]
+
+            P, Q, L, U = lu.lu_complete_pivot(A)
+            Amy = np.dot(np.dot(P, np.dot(L, U)), Q)
+            test_complete += [norm_1(A, Amy)]
+
+            P, Q, L, U = lu.lu_rook_pivot(A)
+            Amy = np.dot(np.dot(P, np.dot(L, U)), Q)
+            test_rook += [norm_1(A, Amy)]
+
+            P, L, U = lu_block.lu_partial_block(A, 32)
+            Amy = np.dot(P, np.dot(L, U))
+            test_block += [norm_1(A, Amy)]
+
+            # U = sp.cholesky(pos_def)
+            # Amy = np.dot(U.transpose(), U)
+            # test_sp += [norm_2(pos_def, Amy)]
+            #
+            # U = cholesky.cholesky_block(pos_def, 32)
+            # Amy = np.dot(U.transpose(), U)
+            # test_partial += [norm_2(pos_def, Amy)]
 
             # L2, U2 = lu_square.lu_in_place(A)
             # lu = np.dot(L2, U2)
@@ -119,30 +142,30 @@ def precision_test(minsize, maxsize, step, repeat):
             'boxpoints': False
             }]
 
-        # plot_data += [{
-        #     'y': test_partial,
-        #     'type':'box',
-        #     'marker':{'color': 'blue'},
-        #     'name': str(i) + 'x' + str(i),
-        #     'boxpoints': False
-        #     }]
-        #
-        # plot_data += [{
-        #     'y': test_complete,
-        #     'type':'box',
-        #     'marker':{'color': 'red'},
-        #     'name': str(i) + 'x' + str(i),
-        #     'boxpoints': False
-        #     }]
+        plot_data += [{
+            'y': test_partial,
+            'type':'box',
+            'marker':{'color': 'blue'},
+            'name': str(i) + 'x' + str(i),
+            'boxpoints': False
+            }]
 
-        # plot_data += [{
-        #     'y': test_rook,
-        #     'type':'box',
-        #     'marker':{'color': 'green'},
-        #     'name': str(i) + 'x' + str(i),
-        #     'boxpoints': False
-        #     }]
-        #
+        plot_data += [{
+            'y': test_complete,
+            'type':'box',
+            'marker':{'color': 'red'},
+            'name': str(i) + 'x' + str(i),
+            'boxpoints': False
+            }]
+
+        plot_data += [{
+            'y': test_rook,
+            'type':'box',
+            'marker':{'color': 'green'},
+            'name': str(i) + 'x' + str(i),
+            'boxpoints': False
+            }]
+
         plot_data += [{
             'y': test_block,
             'type':'box',
@@ -171,62 +194,146 @@ def precision_test(minsize, maxsize, step, repeat):
 
     print np.polyfit(range(len(y_sp)), y_sp, 1, full=True)
     print np.polyfit(range(len(y_sp)), y_sp, 2, full=True)
-    # print np.polyfit(range(len(y_partial)), y_partial, 1, full=True)
-    # print np.polyfit(range(len(y_partial)), y_partial, 2, full=True)
-    # print np.polyfit(range(len(y_complete)), y_complete, 1, full=True)
-    # print np.polyfit(range(len(y_complete)), y_complete, 2, full=True)
-    # print np.polyfit(range(len(y_rook)), y_rook, 1, full=True)
-    # print np.polyfit(range(len(y_rook)), y_rook, 2, full=True)
+    print np.polyfit(range(len(y_partial)), y_partial, 1, full=True)
+    print np.polyfit(range(len(y_partial)), y_partial, 2, full=True)
+    print np.polyfit(range(len(y_complete)), y_complete, 1, full=True)
+    print np.polyfit(range(len(y_complete)), y_complete, 2, full=True)
+    print np.polyfit(range(len(y_rook)), y_rook, 1, full=True)
+    print np.polyfit(range(len(y_rook)), y_rook, 2, full=True)
     print np.polyfit(range(len(y_block)), y_block, 1, full=True)
     print np.polyfit(range(len(y_block)), y_block, 2, full=True)
 
     url = py.plot(plot_data, filename='precision')
 
-#precision_test(100, 1001, 100, 10)
+#precision_test(200, 2001, 200, 4)
 
 
 def benchmark_test(minsize, maxsize, step, repeat):
     plot_data = []
+    y_sp       = []
+    y_block  = []
+    y_no = []
     for i in range(minsize, maxsize, step):
         test_sp = []
-        test_my = []
+        test_no = []
+        test_partial = []
+        test_complete = []
+        test_rook = []
+        test_block = []
+
         for j in range(repeat):
-            rand_int_matrix = tests.generate_pos_dif(i, 1000, 100000)
+            # pos_def = tests.generate_pos_dif(i, 1, 1000)
+            A = np.random.randint(-1000, 1000, size=(i, i))   # change
+           # Ab = np.random.randint(-1000, 1000, size=(i, 1))  # change
 
             time_start = time.clock()
-            lu_.lu_out_of_place(rand_int_matrix)
-            test_my += [time.clock() - time_start]
-
-            time_start = time.clock()
-            lu_.lu_in_place(rand_int_matrix)
+            sp.lu(A)
             test_sp += [time.clock() - time_start]
 
+            time_start = time.clock()
+            lu.lu_in_place(A)
+            test_no += [time.clock() - time_start]
+
+            time_start = time.clock()
+            lu.lu_partial_pivot(A)
+            test_partial += [time.clock() - time_start]
+
+            time_start = time.clock()
+            lu.lu_complete_pivot(A)
+            test_complete += [time.clock() - time_start]
+
+            time_start = time.clock()
+            lu.lu_rook_pivot(A)
+            test_rook += [time.clock() - time_start]
+
+            time_start = time.clock()
+            lu_block.lu_partial_block(A, 32)
+            test_block += [time.clock() - time_start]
+
+
+            # time_start = time.clock()
+            # lu.lu_partial_pivot(A)
+            # test_no += [time.clock() - time_start]
+
             print i, j
-            plot_data += [{
-                'y': test_my,
-                'type':'box',
-                'marker':{'color': 'orange'},
-                'name': str(i) + 'x' + str(i),
-                'boxpoints': False
-                }]
-            plot_data += [{
-                'y': test_sp,
-                'type':'box',
-                'marker':{'color': 'cyan'},
-                'name': str(i) + 'x' + str(i),
-                'boxpoints': False
-                }]
+
+        plot_data += [{
+            'y': test_sp,
+            'type':'box',
+            'marker':{'color': 'black'},
+            'name': str(i) + 'x' + str(i),
+            'boxpoints': False
+            }]
+
+        plot_data += [{
+            'y': test_no,
+            'type':'box',
+            'marker':{'color': 'grey'},
+            'name': str(i) + 'x' + str(i),
+            'boxpoints': False
+            }]
+
+        plot_data += [{
+            'y': test_partial,
+            'type':'box',
+            'marker':{'color': 'blue'},
+            'name': str(i) + 'x' + str(i),
+            'boxpoints': False
+            }]
+
+        plot_data += [{
+            'y': test_complete,
+            'type':'box',
+            'marker':{'color': 'red'},
+            'name': str(i) + 'x' + str(i),
+            'boxpoints': False
+            }]
+
+        plot_data += [{
+            'y': test_rook,
+            'type':'box',
+            'marker':{'color': 'green'},
+            'name': str(i) + 'x' + str(i),
+            'boxpoints': False
+            }]
+
+        plot_data += [{
+            'y': test_block,
+            'type':'box',
+            'marker':{'color': 'purple'},
+            'name': str(i) + 'x' + str(i),
+            'boxpoints': False
+            }]
+            # plot_data += [{
+            #     'y': test_no,
+            #     'type':'box',
+            #     'marker':{'color': 'blue'},
+            #     'name': str(i) + 'x' + str(i),
+            #     'boxpoints': False
+            # #     }]
+            #
+            # y_sp += [np.sum(test_sp) / len(test_sp)]
+            # y_block += [np.sum(test_block) / len(test_block)]
+            # # y_no += [np.sum(test_no) / len(test_no)]
+
+    # print np.polyfit(range(len(y_sp)), y_sp, 1, full=True)
+    # print np.polyfit(range(len(y_sp)), y_sp, 2, full=True)
+    # print np.polyfit(range(len(y_block)), y_block, 1, full=True)
+    # print np.polyfit(range(len(y_block)), y_block, 2, full=True)
+    # # # print np.polyfit(range(len(y_no)), y_no, 1, full=True)
+    # # # print np.polyfit(range(len(y_no)), y_no, 2, full=True)
+
 
     url = py.plot(plot_data, filename='Benchmark')
 
-benchmark_test(2001, 2002, 100, 4)
+benchmark_test(200, 2001, 200, 4)
 
 
 def block_test(minsize, maxsize, step, repeat):
     plot_data = []
     #rand_matrix = np.random.rand(500, 500)  # change
     #pos_def = tests.generate_pos_dif(1000, 1000, 1000000)
-    rand_int_matrix = np.random.randint(-1000, 1000, size=(2000, 2000))
+    rand_int_matrix = np.random.randint(-1000, 1000, size=(1500, 1500))
     for i in xrange(minsize, maxsize, step):
         test = []
         for j in xrange(repeat):
@@ -244,7 +351,7 @@ def block_test(minsize, maxsize, step, repeat):
     url = py.plot(plot_data, filename='Benchmark')
 
 
-#block_test(4, 501, 4, 4)
+#block_test(10, 70, 1, 4)
 
 
 
@@ -266,5 +373,23 @@ sp, partial, complete, rook, block. 2 for hver
 lu uden pivot
 (array([  4.31107011e-13,  -2.60381436e-13]), array([  8.28344472e-25]), 2, array([ 1.35754456,  0.39632407]), 2.2204460492503131e-15)
 (array([  2.71976352e-14,   1.86328294e-13,   6.59901862e-14]), array([  4.37776874e-25]), 3, array([ 1.64219501,  0.53895301,  0.11280603]), 2.2204460492503131e-15)
+"""
+
+"""
+SP vs Block vs ikke block
+(array([ 0.27621989, -2.17783483]), array([ 71.47326403]), 2, array([ 1.36401128,  0.37346114]), 8.8817841970012523e-15)
+(array([ 0.01044912, -0.13129575,  0.40309755]), array([ 9.55365804]), 3, array([ 1.64814728,  0.52277869,  0.10155286]), 8.8817841970012523e-15)
+(array([ 0.37224716, -2.72476711]), array([ 112.71332054]), 2, array([ 1.36401128,  0.37346114]), 8.8817841970012523e-15)
+(array([ 0.01309176, -0.13833148,  0.50889764]), array([ 15.51362282]), 3, array([ 1.64814728,  0.52277869,  0.10155286]), 8.8817841970012523e-15)
+(array([ 0.79877836, -6.08374302]), array([ 534.15627288]), 2, array([ 1.36401128,  0.37346114]), 8.8817841970012523e-15)
+(array([ 0.02888144, -0.3275979 ,  1.04997333]), array([ 61.1067546]), 3, array([ 1.64814728,  0.52277869,  0.10155286]), 8.8817841970012523e-15)
+"""
+
+"""
+hastighed for SP solve vs solve med blok
+(array([ 0.26333138, -2.08036845]), array([ 63.81775624]), 2, array([ 1.36401128,  0.37346114]), 8.8817841970012523e-15)
+(array([ 0.00992129, -0.12359881,  0.37018938]), array([ 7.99582676]), 3, array([ 1.64814728,  0.52277869,  0.10155286]), 8.8817841970012523e-15)
+(array([ 0.36932482, -2.66518351]), array([ 102.26626305]), 2, array([ 1.36401128,  0.37346114]), 8.8817841970012523e-15)
+(array([ 0.01260493, -0.12226743,  0.44823409]), array([ 12.16109905]), 3, array([ 1.64814728,  0.52277869,  0.10155286]), 8.8817841970012523e-15)
 """
 

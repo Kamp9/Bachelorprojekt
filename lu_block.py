@@ -1,10 +1,11 @@
 # coding=utf-8
 import numpy as np
 import scipy.linalg as sp
-import lu_
+import lu
 np.set_printoptions(linewidth=200)
 
 
+# LU in place for arbitrary dimensions
 def lu_in_place(A):
     m, n = A.shape
     U = A.astype(np.float64)
@@ -142,6 +143,8 @@ def lu_partial(A):
     return P, L, np.triu(U[:n, :n])
 
 
+# Fastest working funktion for LU decomposition
+# Woorks fastest with blocksize r around 32
 def lu_partial_block(A, r):
     m, n = A.shape
     A = A.astype(np.float64)
@@ -160,3 +163,4 @@ def lu_partial_block(A, r):
         U[k:k+r, k+r:] = row_substitution(L[k:k+r, k:k+r], A[k:k+r, k+r:])
         A[k+r:, k+r:] -= np.dot(L[k+r:, k:k+r], U[k:k+r, k+r:])
     return P_to_Pmatrix(P), L, U
+

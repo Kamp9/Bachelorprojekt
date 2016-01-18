@@ -1,6 +1,6 @@
 # coding=utf-8
 import numpy as np
-import lu_
+import lu
 import cholesky
 import lu_block
 
@@ -34,57 +34,49 @@ def solve_cholesky(A, b):
 def solve(A, b, pivoting):
     # No pivoting
     if pivoting == 0:
-        L, U = lu_.lu_out_of_place(A)
+        L, U = lu.lu_out_of_place(A)
         z = forward_substitution(L, b)
         x = back_substitution(U, z)
         return x
 
     # Partial pivoting
     if pivoting == 1:
-        P, L, U = lu_.lu_partial_pivot(A)
+        P, L, U = lu.lu_partial_pivot(A)
         z = forward_substitution(L, np.dot(P.transpose(), b))
         x = back_substitution(U, z)
         return x
 
     # Complete pivoting
     if pivoting == 2:
-        P, Q, L, U = lu_.lu_complete_pivot(A)
+        P, Q, L, U = lu.lu_complete_pivot(A)
         z = forward_substitution(L, np.dot(P.transpose(), b))
         x = np.dot(Q.transpose(), back_substitution(U, z))
         return x
 
     # Rook pivoting
     if pivoting == 3:
-        P, Q, L, U = lu_.lu_rook_pivot(A)
+        P, Q, L, U = lu.lu_rook_pivot(A)
         z = forward_substitution(L, np.dot(P.transpose(), b))
         x = np.dot(Q.transpose(), back_substitution(U, z))
         return x
 
     # Blok PP
     if pivoting == 4:
-        P, L, U = lu_block.lu_partial_block(A, 92)
+        P, L, U = lu_block.lu_partial_block(A, 32)
         z = forward_substitution(L, np.dot(P.transpose(), b))
         x = back_substitution(U, z)
         return x
 
 
 def inverse(A, pivoting):
-    # FIX og brug solve!
-    # FIX og brug solve!
-    # FIX og brug solve!
-    # FIX og brug solve!
-    # FIX og brug solve!
-    # FIX og brug solve!
-    # FIX og brug solve!
-
     (m, n) = A.shape
     A_inverse = np.zeros((m, m))
     b = np.identity(m)
 
-    # No pivot strategy
+    # No pivot
     if pivoting == 0:
+        L, U = lu.lu_out_of_place(A)
         for k in range(m):
-            L, U = lu_.lu_in_place(A)
             z = forward_substitution(L, b[:, k])
             x = back_substitution(U, z)
             A_inverse[:, k, np.newaxis] = x
@@ -92,7 +84,7 @@ def inverse(A, pivoting):
 
     # Partial pivot
     if pivoting == 1:
-        P, L, U = lu_.lu_partial_pivot(A)
+        P, L, U = lu.lu_partial_pivot(A)
         for k in range(m):
             z = forward_substitution(L, np.dot(P.transpose(), b[:, k]))
             x = back_substitution(U, z)
@@ -101,33 +93,27 @@ def inverse(A, pivoting):
 
     # Complete pivot
     if pivoting == 2:
-        P, Q, L, U = lu_.lu_complete_pivot(A)
+        P, Q, L, U = lu.lu_complete_pivot(A)
         for k in range(m):
             z = forward_substitution(L, np.dot(P.transpose(), b[:, k]))
             x = np.dot(Q.transpose(), back_substitution(U, z))
             A_inverse[:, k, np.newaxis] = x
         return A_inverse
 
+    # Rook pivot
+    if pivoting == 3:
+        P, Q, L, U = lu.lu_rook_pivot(A)
+        for k in range(m):
+            z = forward_substitution(L, np.dot(P.transpose(), b[:, k]))
+            x = np.dot(Q.transpose(), back_substitution(U, z))
+            A_inverse[:, k, np.newaxis] = x
+        return A_inverse
 
-def inverse2(A):
-    (m, n) = A.shape
-    P, L, U = lu_.lu_partial_pivot(A)
-    A_inverse = np.zeros((m, m))
-    b = np.identity(m)
-    for k in range(m):
-        z = forward_substitution(L, np.dot(P.transpose(), b[:, k]))
-        x = back_substitution(U, z)
-        A_inverse[:, k, np.newaxis] = x
-    return A_inverse
-
-
-def inverse3(A):
-    (m, n) = A.shape
-    P, Q, L, U = lu_.lu_complete_pivot(A)
-    A_inverse = np.zeros((m, m))
-    b = np.identity(m)
-    for k in range(m):
-        z = forward_substitution(L, np.dot(P.transpose(), b[:, k]))
-        x = np.dot(Q.transpose(), back_substitution(U, z))
-        A_inverse[:, k, np.newaxis] = x
-    return A_inverse
+    # PP block
+    if pivoting == 4:
+        P, L, U = lu_block.lu_partial_block(A, 32)
+        for k in range(m):
+            z = forward_substitution(L, np.dot(P.transpose(), b[:, k]))
+            x = back_substitution(U, z)
+            A_inverse[:, k, np.newaxis] = x
+        return A_inverse

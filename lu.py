@@ -148,7 +148,7 @@ def lu_rook_pivot(A):
     return P.transpose(), Q.transpose(), L, np.triu(U)
 
 
-def row_substitution(L, B):
+def row_sub(L, B):
     m, n = L.shape
     r, n = B.shape
     L = L.astype(np.float64)
@@ -159,7 +159,7 @@ def row_substitution(L, B):
     return x
 
 
-def col_substitution(U, B):
+def col_sub(U, B):
     m, n = U.shape
     n, r = B.shape
     U = U.astype(np.float64)
@@ -179,7 +179,7 @@ def lu_block(A, r):
         decomp = lu_in_place(A[k:k+r, k:k+r])
         L[k:k+r, k:k+r] = decomp[0]
         U[k:k+r, k:k+r] = decomp[1]
-        L[k+r:, k:k+r] = col_substitution(U[k:k+r, k:k+r], A[k+r:, k:k+r])
-        U[k:k+r, k+r:] = row_substitution(L[k:k+r, k:k+r], A[k:k+r, k+r:])
+        L[k+r:, k:k+r] = col_sub(U[k:k+r, k:k+r], A[k+r:, k:k+r])
+        U[k:k+r, k+r:] = row_sub(L[k:k+r, k:k+r], A[k:k+r, k+r:])
         A[k+r:, k+r:] -= np.dot(L[k+r:, k:k+r], U[k:k+r, k+r:])
     return L, U

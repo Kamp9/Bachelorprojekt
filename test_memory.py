@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.linalg as sp
 import lu_block
+import lu
 from memory_profiler import profile
 
 
@@ -28,41 +29,11 @@ def cholesky_in_place(A):
     return U
 
 
-@profile
-def lu_partial_block2(A, r):
-    m, n = A.shape
-    A = A.astype(np.float64)
-    P = range(m)
-    L = np.identity(m)
-    U = np.zeros((m, m))
-    for k in range(0, min(m, n), r):
-        PLU = lu_block.lu_partial(A[k:, k:k+r])
-        temp_P = PLU[0]
-        temp_P_i = lu_block.invert_permutation_array(temp_P)
-        P[k:] = lu_block.permute_array(temp_P, P[k:])
-        L[k:, k:k+r] = PLU[1]
-        U[k:k+r, k:k+r] = PLU[2][:r, :r]
-        L[k:, :k] = lu_block.permute_rows(temp_P_i, L[k:, :k])
-        A[k:, k:] = lu_block.permute_rows(temp_P_i, A[k:, k:])
-        U[k:k+r, k+r:] = lu_block.row_substitution(L[k:k+r, k:k+r], A[k:k+r, k+r:])
-        A[k+r:, k+r:] -= np.dot(L[k+r:, k:k+r], U[k:k+r, k+r:])
-    return lu_block.P_to_Pmatrix(P), L, U
+A = np.random.random_integers(-1000, 1000, size=(2000, 2000))
+# b = np.random.random_integers(1000000, 100000000, size=(1000, 1))
+# a_sym = (a + a.T)/2
+# np.fill_diagonal(a_sym, b)
 
-a = np.random.random_integers(-1000, 1000, size=(1000, 1000))
-b = np.random.random_integers(1000000, 100000000, size=(1000, 1))
-a_sym = (a + a.T)/2
-np.fill_diagonal(a_sym, b)
-
-#cholesky(a_sym)
-
-#cholesky_in_place(a_sym)
-
-#sp.lu(a_sym)
-
-lu_partial_block2(a, 100)
-
-"""
-chmod a+x ./myapp.py
-perf stat ./myapp.py
-"""
-
+# lu.lu_in_place(A)
+#lu_block.lu_partial_block(A, 92)
+sp.lu(A)

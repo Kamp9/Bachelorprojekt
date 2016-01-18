@@ -1,6 +1,6 @@
 import numpy as np
 import scipy.linalg as sp
-import lu_
+import lu
 import cholesky
 import lu_block
 np.set_printoptions(linewidth=200)
